@@ -281,7 +281,153 @@
 
         <p class="snake-help">Tastatur: ← → bewegen · ↑ drehen · ↓ schneller · Leertaste = Hard Drop</p>
       </section>
+<section id="dropDuelScreen" class="screen">
 
+    <div class="game-topbar">
+
+        <button
+            id="dropDuelMenuButton"
+            class="back-button">
+
+            ← <span>Menü</span>
+
+        </button>
+
+        <h2>
+            🔵 DROP DUEL
+        </h2>
+
+        <button
+            id="dropDuelResetButton"
+            class="icon-button">
+
+            ↻
+
+        </button>
+
+    </div>
+
+
+    <div class="dropduel-toolbar">
+
+        <div class="dropduel-stat">
+
+            <span>
+                🔴 SPIELER
+            </span>
+
+            <strong
+                id="dropDuelPlayerWins">
+                0
+            </strong>
+
+        </div>
+
+
+        <div
+            class="dropduel-turn"
+            id="dropDuelTurn">
+
+            DEIN ZUG
+
+        </div>
+
+
+        <div class="dropduel-stat">
+
+            <span>
+                🔵 COMPUTER
+            </span>
+
+            <strong
+                id="dropDuelCpuWins">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="dropduel-board-wrap">
+
+        <div
+            id="dropDuelColumns"
+            class="dropduel-columns">
+        </div>
+
+
+        <div
+            id="dropDuelBoard"
+            class="dropduel-board">
+
+        </div>
+
+
+        <div
+            id="dropDuelOverlay"
+            class="arena-overlay">
+
+            <div class="intro-icon">
+                🔵
+            </div>
+
+            <h3>
+                DROP DUEL
+            </h3>
+
+            <p>
+                Bringe vier deiner Steine
+                in eine Reihe.
+            </p>
+
+            <button
+                id="startDropDuelButton"
+                class="primary-button">
+
+                SPIEL STARTEN
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="dropDuelGameOver"
+            class="snake-game-over hidden">
+
+            <h3
+                id="dropDuelResultTitle">
+
+                GEWONNEN!
+
+            </h3>
+
+            <p
+                id="dropDuelResultText">
+            </p>
+
+            <button
+                id="dropDuelRestartButton"
+                class="primary-button">
+
+                NOCHMAL SPIELEN
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <p class="snake-help">
+
+        Tippe auf eine Spalte oder
+        direkt auf das Spielfeld.
+
+    </p>
+
+</section>
       <section id="gameOverScreen" class="screen game-over">
         <div class="confetti" aria-hidden="true">✦　◆　•　★　◇　✦　•　◆　★</div>
         <div class="trophy">🏆</div>
