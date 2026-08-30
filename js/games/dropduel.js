@@ -23,6 +23,7 @@ let cpuWins = 0;
 
 let initialized = false;
 
+let onGameOver = null;
 
 /* =========================================================
    HTML ELEMENTE
@@ -1403,10 +1404,13 @@ function setDifficulty(
    INITIALISIERUNG
    ========================================================= */
 
-export function initDropDuel() {
+export function initDropDuel(options = {}) {
+
+    if (options.onGameOver) {
+        onGameOver = options.onGameOver;
+    }
 
     if (!initialized) {
-
         createColumnButtons();
 
 
