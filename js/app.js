@@ -1,140 +1,396 @@
+/* =========================================================
+   MINI ARCADE
+   ZENTRALE APP-STEUERUNG
+   ========================================================= */
+
 import {
   getProfile,
+  recordGame,
   getLevel,
   getLevelProgress,
   getBest,
-  recordGame
+  getAchievements,
+  getChallenges,
+  saveProfile
 } from "./arcade/profile.js";
 
-import { initReactionGame, stopReactionGame } from "./arcade/reaction.js";
-import { initMemoryGame, stopMemoryGame } from "./arcade/memory.js";
-import { initSnakeGame, stopSnakeGame } from "./arcade/snake.js";
-import { initBlockRush, stopBlockRush } from "./arcade/blockrush.js";
-import { initDropDuel, stopDropDuel } from "./arcade/dropduel.js";
+
+/* =========================================================
+   GAME MODULES
+   ========================================================= */
+
+import {
+  initReaction,
+  stopReaction
+} from "./games/reaction.js";
+
+import {
+  initMemory,
+  stopMemory
+} from "./games/memory.js";
+
+import {
+  initSnakeGame,
+  stopSnakeGame
+} from "./games/snake.js";
+
+import {
+  initBlockRush,
+  stopBlockRush
+} from "./games/blockrush.js";
+
+import {
+  initDropDuel,
+  stopDropDuel
+} from "./games/dropduel.js";
 
 
 /* =========================================================
-   ELEMENTE
+   STATE
    ========================================================= */
 
-const screens = document.querySelectorAll(".screen");
-
-const menuScreen = document.querySelector("#menuScreen");
-
-const coinCount = document.querySelector("#coinCount");
-
-const levelValue = document.querySelector("#levelValue");
-const xpValue = document.querySelector("#xpValue");
-const xpBar = document.querySelector("#xpBar");
-
-const highscoreButton =
-  document.querySelector("#highscoreButton");
-
-const myGamesButton =
-  document.querySelector("#myGamesButton");
-
-const settingsButton =
-  document.querySelector("#settingsButton");
-
-const highscoreBackButton =
-  document.querySelector("#highscoreBackButton");
-
-const settingsBackButton =
-  document.querySelector("#settingsBackButton");
-
-const gameOverScreen =
-  document.querySelector("#gameOverScreen");
-
-const finalScore =
-  document.querySelector("#finalScore");
-
-const highscoreMessage =
-  document.querySelector("#highscoreMessage");
-
-const rewardMessage =
-  document.querySelector("#rewardMessage");
-
-const achievementReward =
-  document.querySelector("#achievementReward");
-
-const playAgainButton =
-  document.querySelector("#playAgainButton");
-
-const gameOverMenuButton =
-  document.querySelector("#gameOverMenuButton");
-
-const soundToggle =
-  document.querySelector("#soundToggle");
-
-const resetScoreButton =
-  document.querySelector("#resetScoreButton");
-
-
-/* =========================================================
-   SPIELZUSTAND
-   ========================================================= */
-
+let currentScreen = "menuScreen";
 let currentGame = null;
-let lastGameScore = 0;
+
+let lastGame = null;
+let lastScore = 0;
+
+let initialized = false;
+
+
+/* =========================================================
+   HTML
+   ========================================================= */
+
+const screens =
+  document.querySelectorAll(".screen");
+
+const coinCount =
+  document.querySelector("#coinCount");
+
+const levelValue =
+  document.querySelector("#levelValue");
+
+const xpValue =
+  document.querySelector("#xpValue");
+
+const xpBar =
+  document.querySelector("#xpBar");
+
+const arcadeLevel =
+  document.querySelector("#arcadeLevel");
+
+const arcadeXP =
+  document.querySelector("#arcadeXP");
+
+const arcadeXPProgress =
+  document.querySelector("#arcadeXPProgress");
+
+const arcadeTotalGames =
+  document.querySelector("#arcadeTotalGames");
+
+const arcadeTotalWins =
+  document.querySelector("#arcadeTotalWins");
+
+const arcadeBestScore =
+  document.querySelector("#arcadeBestScore");
 
 
 /* =========================================================
    SCREEN WECHSELN
    ========================================================= */
 
-function showScreen(id) {
+function showScreen(screenId) {
 
   screens.forEach(screen => {
-    screen.classList.remove("active");
+
+    screen.classList.toggle(
+      "active",
+      screen.id === screenId
+    );
+
   });
 
-  const screen =
-    document.querySelector(`#${id}`);
 
-  if (screen) {
-    screen.classList.add("active");
-  }
+  currentScreen =
+    screenId;
 
 }
 
 
 /* =========================================================
-   ALLE GAMES STOPPEN
+   SPIEL STOPPEN
    ========================================================= */
 
-function stopAllGames() {
+function stopCurrentGame() {
 
-  try {
-    stopReactionGame();
-  } catch {}
+  if (!currentGame) {
+    return;
+  }
 
-  try {
-    stopMemoryGame();
-  } catch {}
 
-  try {
-    stopSnakeGame();
-  } catch {}
+  switch (currentGame) {
 
-  try {
-    stopBlockRush();
-  } catch {}
+    case "reaction":
+      stopReaction?.();
+      break;
 
-  try {
-    stopDropDuel();
-  } catch {}
+    case "memory":
+      stopMemory?.();
+      break;
+
+    case "snake":
+      stopSnakeGame?.();
+      break;
+
+    case "blockrush":
+      stopBlockRush?.();
+      break;
+
+    case "dropduel":
+      stopDropDuel?.();
+      break;
+
+  }
+
+
+  currentGame =
+    null;
 
 }
 
 
 /* =========================================================
-   PROFIL AKTUALISIEREN
+   PROFIL
    ========================================================= */
 
 function updateProfileUI() {
 
   const profile =
     getProfile();
+
+
+  const level =
+    getLevel(profile.xp);
+
+
+  const progress =
+    getLevelProgress(profile.xp);
+
+
+  /* Coins */
+
+  if (coinCount) {
+
+    coinCount.textContent =
+      profile.coins.toLocaleString("de-DE");
+
+  }
+
+
+  /* Level */
+
+  if (levelValue) {
+
+    levelValue.textContent =
+      level;
+
+  }
+
+
+  if (arcadeLevel) {
+
+    arcadeLevel.textContent =
+      level;
+
+  }
+
+
+  /* XP */
+
+  if (xpValue) {
+
+    xpValue.textContent =
+      `${progress}/100 XP`;
+
+  }
+
+
+  if (arcadeXP) {
+
+    arcadeXP.textContent =
+      `${progress} / 100 XP`;
+
+  }
+
+
+  /* XP-Balken */
+
+  if (xpBar) {
+
+    xpBar.style.width =
+      `${progress}%`;
+
+  }
+
+
+  if (arcadeXPProgress) {
+
+    arcadeXPProgress.style.width =
+      `${progress}%`;
+
+  }
+
+
+  updateMiniStats(profile);
+
+  updateHighscores(profile);
+
+  updateProfileScreen(profile);
+
+}
+
+
+/* =========================================================
+   MINI STATS
+   ========================================================= */
+
+function updateMiniStats(profile) {
+
+  const highscores =
+    profile.highscores || {};
+
+
+  const scores =
+    Object.values(highscores)
+      .map(Number)
+      .filter(score => score > 0);
+
+
+  const best =
+    scores.length
+      ? Math.max(...scores)
+      : 0;
+
+
+  if (arcadeBestScore) {
+
+    arcadeBestScore.textContent =
+      best;
+
+  }
+
+
+  /*
+     Das vorhandene Profil speichert
+     aktuell keine separate Spielezahl
+     oder Siegzahl.
+
+     Deshalb zählen wir hier die
+     vorhandenen Highscores als
+     gespielte Spiele und lassen
+     Siege zunächst auf 0.
+
+     Sobald wir in profile.js
+     totalGames / totalWins ergänzen,
+     übernimmt diese Anzeige
+     automatisch diese Werte.
+  */
+
+  if (arcadeTotalGames) {
+
+    if (
+      typeof profile.totalGames === "number"
+    ) {
+
+      arcadeTotalGames.textContent =
+        profile.totalGames;
+
+    }
+    else {
+
+      arcadeTotalGames.textContent =
+        scores.length;
+
+    }
+
+  }
+
+
+  if (arcadeTotalWins) {
+
+    arcadeTotalWins.textContent =
+      typeof profile.totalWins === "number"
+        ? profile.totalWins
+        : 0;
+
+  }
+
+}
+
+
+/* =========================================================
+   HIGHSCORES
+   ========================================================= */
+
+function updateHighscores(profile) {
+
+  const highscores =
+    profile.highscores || {};
+
+
+  const elements = {
+
+    reaction:
+      document.querySelector("#reactionBest"),
+
+    memory:
+      document.querySelector("#memoryBest"),
+
+    snake:
+      document.querySelector("#snakeBest"),
+
+    blockrush:
+      document.querySelector("#blockrushBest")
+
+  };
+
+
+  Object.entries(elements)
+    .forEach(([game, element]) => {
+
+      if (!element) {
+        return;
+      }
+
+
+      element.textContent =
+        highscores[game] || 0;
+
+    });
+
+
+  const stored =
+    document.querySelector(
+      "#storedHighscore"
+    );
+
+
+  if (stored) {
+
+    stored.textContent =
+      highscores.reaction || 0;
+
+  }
+
+}
+
+
+/* =========================================================
+   PROFIL-SEITE
+   ========================================================= */
+
+function updateProfileScreen(profile) {
 
   const level =
     getLevel(profile.xp);
@@ -143,215 +399,325 @@ function updateProfileUI() {
     getLevelProgress(profile.xp);
 
 
-  if (coinCount) {
-    coinCount.textContent =
-      profile.coins.toLocaleString("de-DE");
-  }
+  const profileLevel =
+    document.querySelector(
+      "#profileLevel"
+    );
+
+  const profileCoins =
+    document.querySelector(
+      "#profileCoins"
+    );
+
+  const profileXp =
+    document.querySelector(
+      "#profileXp"
+    );
+
+  const profileXpBar =
+    document.querySelector(
+      "#profileXpBar"
+    );
 
 
-  if (levelValue) {
-    levelValue.textContent =
+  if (profileLevel) {
+
+    profileLevel.textContent =
       level;
+
   }
 
 
-  if (xpValue) {
-    xpValue.textContent =
-      `${progress}/100 XP`;
+  if (profileCoins) {
+
+    profileCoins.textContent =
+      profile.coins.toLocaleString(
+        "de-DE"
+      );
+
   }
 
 
-  if (xpBar) {
-    xpBar.style.width =
+  if (profileXp) {
+
+    profileXp.textContent =
+      `${progress}/100`;
+
+  }
+
+
+  if (profileXpBar) {
+
+    profileXpBar.style.width =
       `${progress}%`;
+
   }
 
 
-  /* Neues Profil-Element aus
-     deinem Pixel-Arcade-Header */
+  renderAchievements(profile);
 
-  const arcadeLevel =
-    document.querySelector("#arcadeLevel");
-
-  const arcadeXP =
-    document.querySelector("#arcadeXP");
-
-  const arcadeXPProgress =
-    document.querySelector("#arcadeXPProgress");
-
-
-  if (arcadeLevel) {
-    arcadeLevel.textContent =
-      level;
-  }
-
-
-  if (arcadeXP) {
-    arcadeXP.textContent =
-      `${progress} / 100 XP`;
-  }
-
-
-  if (arcadeXPProgress) {
-    arcadeXPProgress.style.width =
-      `${progress}%`;
-  }
-
-
-  updateHighscores();
+  renderChallenges(profile);
 
 }
 
 
 /* =========================================================
-   HIGHSCORES
+   ERFOLGE
    ========================================================= */
 
-function updateHighscores() {
+function renderAchievements(profile) {
 
-  const reactionBest =
-    document.querySelector("#reactionBest");
+  const container =
+    document.querySelector(
+      "#achievementsGrid"
+    );
 
-  const memoryBest =
-    document.querySelector("#memoryBest");
 
-  const snakeBest =
-    document.querySelector("#snakeBest");
-
-  const blockrushBest =
-    document.querySelector("#blockrushBest");
-
-  if (reactionBest) {
-    reactionBest.textContent =
-      getBest("reaction");
-  }
-
-  if (memoryBest) {
-    memoryBest.textContent =
-      getBest("memory");
-  }
-
-  if (snakeBest) {
-    snakeBest.textContent =
-      getBest("snake");
-  }
-
-  if (blockrushBest) {
-    blockrushBest.textContent =
-      getBest("blockrush");
+  if (!container) {
+    return;
   }
 
 
-  const storedHighscore =
-    document.querySelector("#storedHighscore");
+  const achievements =
+    getAchievements();
 
-  if (storedHighscore) {
-    storedHighscore.textContent =
-      getBest("reaction");
-  }
+
+  const unlocked =
+    new Set(
+      profile.achievements || []
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  achievements.forEach(
+    achievement => {
+
+      const element =
+        document.createElement("div");
+
+
+      element.className =
+        "achievement-card";
+
+
+      if (
+        unlocked.has(
+          achievement.id
+        )
+      ) {
+
+        element.classList.add(
+          "unlocked"
+        );
+
+      }
+
+
+      element.innerHTML = `
+        <div class="achievement-icon">
+          ${achievement.icon}
+        </div>
+
+        <div class="achievement-content">
+          <strong>
+            ${achievement.title}
+          </strong>
+
+          <span>
+            ${achievement.desc}
+          </span>
+
+          <small>
+            +${achievement.reward} 🪙
+          </small>
+        </div>
+      `;
+
+
+      container.appendChild(
+        element
+      );
+
+    }
+  );
 
 }
 
 
 /* =========================================================
-   SPIEL ÖFFNEN
+   CHALLENGES
    ========================================================= */
 
-function openGame(game) {
+function renderChallenges(profile) {
 
-  stopAllGames();
+  const container =
+    document.querySelector(
+      "#challengesList"
+    );
 
-  currentGame =
+
+  if (!container) {
+    return;
+  }
+
+
+  const challenges =
+    getChallenges();
+
+
+  const progress =
+    profile.challengeProgress || {};
+
+
+  const rewards =
+    new Set(
+      profile.challengeRewards || []
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  challenges.forEach(
+    challenge => {
+
+      const current =
+        Math.min(
+          progress[challenge.id] || 0,
+          challenge.target
+        );
+
+
+      const percentage =
+        Math.min(
+          100,
+          (current /
+            challenge.target) *
+            100
+        );
+
+
+      const completed =
+        rewards.has(
+          challenge.id
+        );
+
+
+      const element =
+        document.createElement("div");
+
+
+      element.className =
+        "challenge-card";
+
+
+      if (completed) {
+
+        element.classList.add(
+          "completed"
+        );
+
+      }
+
+
+      element.innerHTML = `
+        <div class="challenge-main">
+
+          <strong>
+            ${challenge.title}
+          </strong>
+
+          <span>
+            ${challenge.desc}
+          </span>
+
+          <div class="challenge-progress">
+            <span
+              style="width:${percentage}%">
+            </span>
+          </div>
+
+          <small>
+            ${current} / ${challenge.target}
+          </small>
+
+        </div>
+
+        <div class="challenge-reward">
+          ${completed ? "✓" : `+${challenge.reward}`}
+          <span>🪙</span>
+        </div>
+      `;
+
+
+      container.appendChild(
+        element
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   GAME RESULTAT
+   ========================================================= */
+
+function handleGameResult(
+  game,
+  score
+) {
+
+  const numericScore =
+    Math.max(
+      0,
+      Number(score) || 0
+    );
+
+
+  lastGame =
     game;
 
-
-  if (game === "reaction") {
-
-    showScreen("reactionScreen");
-
-    initReactionGame({
-      onGameOver: score =>
-        handleGameResult("reaction", score)
-    });
-
-    return;
-  }
+  lastScore =
+    numericScore;
 
 
-  if (game === "memory") {
-
-    showScreen("memoryScreen");
-
-    initMemoryGame({
-      onGameOver: score =>
-        handleGameResult("memory", score)
-    });
-
-    return;
-  }
-
-
-  if (game === "snake") {
-
-    showScreen("snakeScreen");
-
-    initSnakeGame({
-      onGameOver: score =>
-        handleGameResult("snake", score)
-    });
-
-    return;
-  }
-
-
-  if (game === "blockrush") {
-
-    showScreen("blockRushScreen");
-
-    initBlockRush({
-      onGameOver: score =>
-        handleGameResult("blockrush", score)
-    });
-
-    return;
-  }
-
-
-  if (game === "dropduel") {
-
-    showScreen("dropDuelScreen");
-
-    initDropDuel();
-
-    return;
-  }
-
-}
-
-
-/* =========================================================
-   SPIEL-ERGEBNIS
-   ========================================================= */
-
-function handleGameResult(game, score) {
-
-  lastGameScore =
-    Number(score) || 0;
-
+  /*
+     Profil aktualisieren.
+  */
 
   const result =
     recordGame(
       game,
-      lastGameScore
+      numericScore
     );
 
 
-  showGameOver(
+  /*
+     Game-Over-Anzeige
+     für Spiele, die das
+     zentrale Game-Over-Screen
+     verwenden.
+  */
+
+  showGameResult(
     result
   );
 
 
+  /*
+     Profil direkt aktualisieren.
+  */
+
   updateProfileUI();
+
+
+  return result;
 
 }
 
@@ -360,386 +726,742 @@ function handleGameResult(game, score) {
    GAME OVER
    ========================================================= */
 
-function showGameOver(result) {
+function showGameResult(result) {
 
-  finalScore.textContent =
-    result.score;
+  const finalScore =
+    document.querySelector(
+      "#finalScore"
+    );
 
+  const highscoreMessage =
+    document.querySelector(
+      "#highscoreMessage"
+    );
 
-  if (result.isNewHighscore) {
+  const rewardMessage =
+    document.querySelector(
+      "#rewardMessage"
+    );
 
-    highscoreMessage.textContent =
-      "★ NEUER HIGHSCORE! ★";
-
-  } else {
-
-    highscoreMessage.textContent =
-      `Bester Score: ${result.best}`;
-
-  }
-
-
-  rewardMessage.textContent =
-    `+${result.xpEarned} XP · +${result.coinsEarned} 🪙`;
-
-
-  const messages = [];
+  const achievementReward =
+    document.querySelector(
+      "#achievementReward"
+    );
 
 
-  if (
-    result.achievements &&
-    result.achievements.length
-  ) {
+  if (finalScore) {
 
-    result.achievements.forEach(achievement => {
-
-      messages.push(
-        `${achievement.icon} ${achievement.title} · +${achievement.reward} 🪙`
-      );
-
-    });
+    finalScore.textContent =
+      result.score;
 
   }
 
 
-  if (
-    result.challenges &&
-    result.challenges.length
-  ) {
+  if (highscoreMessage) {
 
-    result.challenges.forEach(challenge => {
+    highscoreMessage.classList.toggle(
+      "hidden",
+      !result.isNewHighscore
+    );
 
-      messages.push(
-        `🔥 Challenge geschafft: ${challenge.title} · +${challenge.reward} 🪙`
-      );
+    if (!result.isNewHighscore) {
 
-    });
+      highscoreMessage.textContent =
+        `BESTER SCORE: ${result.best}`;
+
+    }
+    else {
+
+      highscoreMessage.textContent =
+        "★ NEUER HIGHSCORE! ★";
+
+    }
 
   }
 
 
-  achievementReward.textContent =
-    messages.join(" · ");
+  if (rewardMessage) {
+
+    rewardMessage.textContent =
+      `+${result.xpEarned} XP · +${result.coinsEarned} 🪙`;
+
+  }
 
 
-  stopAllGames();
+  if (achievementReward) {
 
-  showScreen("gameOverScreen");
+    const achievements =
+      result.achievements || [];
+
+    const challenges =
+      result.challenges || [];
+
+
+    const messages = [];
+
+
+    achievements.forEach(
+      achievement => {
+
+        messages.push(
+          `🏆 ${achievement.title} +${achievement.reward} 🪙`
+        );
+
+      }
+    );
+
+
+    challenges.forEach(
+      challenge => {
+
+        messages.push(
+          `📅 Challenge: ${challenge.title} +${challenge.reward} 🪙`
+        );
+
+      }
+    );
+
+
+    achievementReward.textContent =
+      messages.join(" · ");
+
+  }
+
+
+  showScreen(
+    "gameOverScreen"
+  );
 
 }
 
 
 /* =========================================================
-   ZURÜCK ZUM MENÜ
+   GAME STARTEN
    ========================================================= */
 
-function goToMenu() {
+function startGame(game) {
 
-  stopAllGames();
+  stopCurrentGame();
 
-  currentGame = null;
 
-  showScreen("menuScreen");
+  currentGame =
+    game;
 
-  updateProfileUI();
+
+  switch (game) {
+
+    /* -----------------------------------------
+       REACTION
+       ----------------------------------------- */
+
+    case "reaction":
+
+      showScreen(
+        "reactionScreen"
+      );
+
+      initReaction({
+
+        onGameOver(score) {
+
+          handleGameResult(
+            "reaction",
+            score
+          );
+
+        }
+
+      });
+
+      break;
+
+
+    /* -----------------------------------------
+       MEMORY
+       ----------------------------------------- */
+
+    case "memory":
+
+      showScreen(
+        "memoryScreen"
+      );
+
+      initMemory();
+
+      break;
+
+
+    /* -----------------------------------------
+       SNAKE
+       ----------------------------------------- */
+
+    case "snake":
+
+      showScreen(
+        "snakeScreen"
+      );
+
+      initSnakeGame({
+
+        onGameOver(score) {
+
+          handleGameResult(
+            "snake",
+            score
+          );
+
+        }
+
+      });
+
+      break;
+
+
+    /* -----------------------------------------
+       BLOCK RUSH
+       ----------------------------------------- */
+
+    case "blockrush":
+
+      showScreen(
+        "blockRushScreen"
+      );
+
+      initBlockRush({
+
+        onGameOver(score) {
+
+          handleGameResult(
+            "blockrush",
+            score
+          );
+
+        }
+
+      });
+
+      break;
+
+
+    /* -----------------------------------------
+       DROP DUEL
+       ----------------------------------------- */
+
+    case "dropduel":
+
+      showScreen(
+        "dropDuelScreen"
+      );
+
+      initDropDuel();
+
+      break;
+
+
+    default:
+
+      currentGame =
+        null;
+
+      showScreen(
+        "menuScreen"
+      );
+
+  }
 
 }
+
+
+/* =========================================================
+   MEMORY RESULT EVENT
+   ========================================================= */
+
+document.addEventListener(
+  "memoryGameOver",
+  event => {
+
+    const score =
+      event.detail?.score ?? 0;
+
+
+    handleGameResult(
+      "memory",
+      score
+    );
+
+  }
+);
+
+
+/* =========================================================
+   MEMORY → MENÜ
+   ========================================================= */
+
+document.addEventListener(
+  "memoryMenu",
+  () => {
+
+    stopCurrentGame();
+
+    showScreen(
+      "menuScreen"
+    );
+
+    updateProfileUI();
+
+  }
+);
 
 
 /* =========================================================
    GAME CARDS
    ========================================================= */
 
-document
-  .querySelectorAll(".game-card")
-  .forEach(card => {
+function initGameCards() {
 
-    card.addEventListener(
+  document
+    .querySelectorAll(
+      ".game-card[data-game]"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const game =
+            button.dataset.game;
+
+
+          if (!game) {
+            return;
+          }
+
+
+          startGame(game);
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   MENÜ BUTTONS
+   ========================================================= */
+
+function initMenuButtons() {
+
+  /* Highscores */
+
+  document
+    .querySelector(
+      "#highscoreButton"
+    )
+    ?.addEventListener(
       "click",
       () => {
 
-        const game =
-          card.dataset.game;
+        stopCurrentGame();
 
-        if (game) {
-          openGame(game);
-        }
+        updateProfileUI();
+
+        showScreen(
+          "highscoreScreen"
+        );
 
       }
     );
 
+
+  /* Meine Spiele / Profil */
+
+  document
+    .querySelector(
+      "#myGamesButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        stopCurrentGame();
+
+        updateProfileUI();
+
+        showScreen(
+          "profileScreen"
+        );
+
+      }
+    );
+
+
+  /* Einstellungen */
+
+  document
+    .querySelector(
+      "#settingsButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        stopCurrentGame();
+
+        showScreen(
+          "settingsScreen"
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   BACK BUTTONS
+   ========================================================= */
+
+function initBackButtons() {
+
+  const backButtons = [
+
+    "#reactionMenuButton",
+    "#snakeMenuButton",
+    "#blockRushMenuButton",
+    "#dropDuelMenuButton",
+    "#memoryMenuButton",
+    "#profileBackButton",
+    "#highscoreBackButton",
+    "#settingsBackButton"
+
+  ];
+
+
+  backButtons.forEach(selector => {
+
+    document
+      .querySelector(selector)
+      ?.addEventListener(
+        "click",
+        () => {
+
+          stopCurrentGame();
+
+          updateProfileUI();
+
+          showScreen(
+            "menuScreen"
+          );
+
+        }
+      );
+
   });
 
-
-/* =========================================================
-   MENÜ-BUTTONS DER GAMES
-   ========================================================= */
-
-document
-  .querySelector("#reactionMenuButton")
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-document
-  .querySelector("#snakeMenuButton")
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-document
-  .querySelector("#memoryMenuButton")
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-document
-  .querySelector("#blockRushMenuButton")
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-document
-  .querySelector("#dropDuelMenuButton")
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-/* =========================================================
-   RESET-BUTTONS DER GAMES
-   ========================================================= */
-
-document
-  .querySelector("#reactionResetButton")
-  ?.addEventListener(
-    "click",
-    () => openGame("reaction")
-  );
-
-
-document
-  .querySelector("#snakeResetButton")
-  ?.addEventListener(
-    "click",
-    () => openGame("snake")
-  );
-
-
-document
-  .querySelector("#memoryResetButton")
-  ?.addEventListener(
-    "click",
-    () => openGame("memory")
-  );
-
-
-document
-  .querySelector("#blockRushResetButton")
-  ?.addEventListener(
-    "click",
-    () => openGame("blockrush")
-  );
-
-
-document
-  .querySelector("#dropDuelResetButton")
-  ?.addEventListener(
-    "click",
-    () => openGame("dropduel")
-  );
-
-
-/* =========================================================
-   HIGHSCORES
-   ========================================================= */
-
-highscoreButton
-  ?.addEventListener(
-    "click",
-    () => {
-
-      stopAllGames();
-
-      updateHighscores();
-
-      showScreen(
-        "highscoreScreen"
-      );
-
-    }
-  );
-
-
-highscoreBackButton
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-/* =========================================================
-   MEINE SPIELE
-   ========================================================= */
-
-myGamesButton
-  ?.addEventListener(
-    "click",
-    () => {
-
-      /*
-       * Vorerst führt dieser Button
-       * zum Profil.
-       *
-       * Dort befinden sich XP,
-       * Coins, Erfolge und Challenges.
-       */
-
-      stopAllGames();
-
-      updateProfileUI();
-
-      showScreen(
-        "profileScreen"
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   PROFIL ZURÜCK
-   ========================================================= */
-
-document
-  .querySelector("#profileBackButton")
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
-
-
-/* =========================================================
-   EINSTELLUNGEN
-   ========================================================= */
-
-settingsButton
-  ?.addEventListener(
-    "click",
-    () => {
-
-      stopAllGames();
-
-      showScreen(
-        "settingsScreen"
-      );
-
-    }
-  );
-
-
-settingsBackButton
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
+}
 
 
 /* =========================================================
    GAME OVER → NOCHMAL
    ========================================================= */
 
-playAgainButton
-  ?.addEventListener(
-    "click",
-    () => {
+function initGameOverButtons() {
 
-      if (!currentGame) {
+  document
+    .querySelector(
+      "#playAgainButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
 
-        goToMenu();
+        if (!lastGame) {
 
-        return;
+          showScreen(
+            "menuScreen"
+          );
+
+          return;
+
+        }
+
+
+        startGame(
+          lastGame
+        );
 
       }
+    );
 
-      openGame(
-        currentGame
-      );
 
-    }
-  );
+  document
+    .querySelector(
+      "#gameOverMenuButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        stopCurrentGame();
+
+        updateProfileUI();
+
+        showScreen(
+          "menuScreen"
+        );
+
+      }
+    );
+
+}
 
 
 /* =========================================================
-   GAME OVER → MENÜ
+   PROFIL RESET
    ========================================================= */
 
-gameOverMenuButton
-  ?.addEventListener(
-    "click",
-    goToMenu
-  );
+function initProfileReset() {
+
+  document
+    .querySelector(
+      "#resetProfileButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        const confirmed =
+          window.confirm(
+            "Möchtest du dein komplettes Arcade-Profil wirklich zurücksetzen?"
+          );
+
+
+        if (!confirmed) {
+          return;
+        }
+
+
+        /*
+           resetProfile ist absichtlich
+           nicht direkt importiert.
+
+           Wir setzen das Profil
+           anhand der vorhandenen
+           Profil-Struktur zurück.
+        */
+
+        const resetProfile = {
+
+          xp: 0,
+
+          coins: 1250,
+
+          highscores: {
+            reaction: 0,
+            memory: 0,
+            snake: 0,
+            blockrush: 0
+          },
+
+          achievements: [],
+
+          challengeDate: "",
+
+          challengeProgress: {
+            play_3: 0,
+            score_250: 0,
+            play_memory: 0
+          },
+
+          challengeRewards: []
+
+        };
+
+
+        saveProfile(
+          resetProfile
+        );
+
+
+        updateProfileUI();
+
+
+        alert(
+          "Profil wurde zurückgesetzt."
+        );
+
+      }
+    );
+
+}
 
 
 /* =========================================================
    SOUND
    ========================================================= */
 
-if (soundToggle) {
+function initSoundSettings() {
 
-  const savedSound =
-    localStorage.getItem(
-      "miniArcadeSound"
+  const soundToggle =
+    document.querySelector(
+      "#soundToggle"
     );
 
 
-  if (savedSound !== null) {
+  const soundButton =
+    document.querySelector(
+      "#soundButton"
+    );
+
+
+  const saved =
+    localStorage.getItem(
+      "arcadeSound"
+    );
+
+
+  let soundEnabled =
+    saved !== "off";
+
+
+  if (soundToggle) {
 
     soundToggle.checked =
-      savedSound === "true";
+      soundEnabled;
+
+
+    soundToggle.addEventListener(
+      "change",
+      () => {
+
+        soundEnabled =
+          soundToggle.checked;
+
+
+        localStorage.setItem(
+          "arcadeSound",
+          soundEnabled
+            ? "on"
+            : "off"
+        );
+
+      }
+    );
 
   }
 
 
-  soundToggle.addEventListener(
-    "change",
-    () => {
+  if (soundButton) {
 
-      localStorage.setItem(
-        "miniArcadeSound",
-        String(
-          soundToggle.checked
-        )
-      );
+    soundButton.addEventListener(
+      "click",
+      () => {
 
-    }
-  );
+        soundEnabled =
+          !soundEnabled;
+
+
+        localStorage.setItem(
+          "arcadeSound",
+          soundEnabled
+            ? "on"
+            : "off"
+        );
+
+
+        soundButton.textContent =
+          soundEnabled
+            ? "🔊"
+            : "🔇";
+
+
+        if (soundToggle) {
+
+          soundToggle.checked =
+            soundEnabled;
+
+        }
+
+      }
+    );
+
+  }
 
 }
 
 
 /* =========================================================
-   SCORE RESET
+   HIGHSCORE RESET
    ========================================================= */
 
-resetScoreButton
-  ?.addEventListener(
-    "click",
-    () => {
+function initHighscoreReset() {
+
+  document
+    .querySelector(
+      "#resetScoreButton"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+
+        const confirmed =
+          window.confirm(
+            "Möchtest du deine Highscores wirklich zurücksetzen?"
+          );
+
+
+        if (!confirmed) {
+          return;
+        }
+
+
+        const profile =
+          getProfile();
+
+
+        profile.highscores = {
+
+          reaction: 0,
+          memory: 0,
+          snake: 0,
+          blockrush: 0
+
+        };
+
+
+        saveProfile(
+          profile
+        );
+
+
+        updateProfileUI();
+
+
+        alert(
+          "Highscores wurden zurückgesetzt."
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   ESC → MENÜ
+   ========================================================= */
+
+function initKeyboardNavigation() {
+
+  document.addEventListener(
+    "keydown",
+    event => {
 
       if (
-        !confirm(
-          "Möchtest du dein Profil wirklich zurücksetzen?"
-        )
+        event.key !== "Escape"
       ) {
 
         return;
@@ -747,23 +1469,74 @@ resetScoreButton
       }
 
 
-      localStorage.removeItem(
-        "miniArcadeProfile"
-      );
+      if (
+        currentScreen ===
+        "menuScreen"
+      ) {
 
+        return;
+
+      }
+
+
+      stopCurrentGame();
 
       updateProfileUI();
 
-      goToMenu();
+      showScreen(
+        "menuScreen"
+      );
 
     }
   );
+
+}
+
+
+/* =========================================================
+   APP INITIALISIEREN
+   ========================================================= */
+
+function initApp() {
+
+  if (initialized) {
+    return;
+  }
+
+
+  initialized =
+    true;
+
+
+  initGameCards();
+
+  initMenuButtons();
+
+  initBackButtons();
+
+  initGameOverButtons();
+
+  initProfileReset();
+
+  initHighscoreReset();
+
+  initSoundSettings();
+
+  initKeyboardNavigation();
+
+
+  updateProfileUI();
+
+
+  showScreen(
+    "menuScreen"
+  );
+
+}
 
 
 /* =========================================================
    START
    ========================================================= */
 
-updateProfileUI();
-
-showScreen("menuScreen");
+initApp();
