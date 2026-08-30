@@ -7,6 +7,7 @@ let lockBoard = false;
 let matchedPairs = 0;
 let moves = 0;
 let initialized = false;
+let onComplete = null;
 
 const board = document.querySelector("#memoryBoard");
 const pairsValue = document.querySelector("#memoryPairs");
@@ -102,7 +103,9 @@ function checkMatch() {
     updateUI();
 
     if (matchedPairs === SYMBOLS.length) {
-      status.textContent = `🎉 Geschafft! ${moves} Züge.`;
+      const score = Math.max(100, 1000 - Math.max(0, moves - 8) * 35);
+      status.textContent = `🎉 Geschafft! ${moves} Züge · ${score} Punkte.`;
+      if (onComplete) onComplete(score);
       return;
     }
 
@@ -127,7 +130,9 @@ function resetTurn() {
   lockBoard = false;
 }
 
-export function initMemoryGame() {
+export function initMemoryGame(options = {}) {
+  onComplete = options.onComplete || onComplete;
+
   if (!initialized) {
     initialized = true;
   }

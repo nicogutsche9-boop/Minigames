@@ -2,6 +2,7 @@ import { showScreen } from "./menu.js";
 import { initReactionGame, stopReactionGame } from "./games/reaction.js";
 import { initMemoryGame } from "./games/memory.js";
 import { initSnakeGame, stopSnakeGame } from "./games/snake.js";
+import { getProfile, getBest, recordGame, resetProfile, getLevel, getLevelProgress } from "./scores.js";
 
 const screens = {
   menu: "menuScreen",
@@ -20,6 +21,38 @@ const soundToggle = document.querySelector("#soundToggle");
 let soundEnabled = localStorage.getItem("miniArcadeSound") !== "false";
 soundToggle.checked = soundEnabled;
 
+function updateProfileUI() {
+  const profile = getProfile();
+  coinCount.textContent = profile.coins.toLocaleString("de-DE");
+
+  const levelEl = document.querySelector("#levelValue");
+  const xpEl = document.querySelector("#xpValue");
+  const xpBar = document.querySelector("#xpBar");
+
+  if (levelEl) levelEl.textContent = getLevel(profile.xp);
+  if (xpEl) xpEl.textContent = `${getLevelProgress(profile.xp)}/100 XP`;
+  if (xpBar) xpBar.style.width = `${getLevelProgress(profile.xp)}%`;
+
+  updateProfileUI();
+}
+
+function finishGame(game, score) {
+  const result = recordGame(game, score);
+
+  document.querySelector("#finalScore").textContent = score;
+  document.querySelector("#highscoreMessage").textContent =
+    result.isNewHighscore
+      ? "★ NEUER HIGHSCORE! ★"
+      : `BESTER SCORE: ${result.best}`;
+
+  const reward = document.querySelector("#rewardMessage");
+  if (reward) {
+    reward.textContent = `+${result.xpEarned} XP · +${result.coinsEarned} Coins`;
+  }
+
+  updateProfileUI();
+}
+
 function goTo(name) {
   if (name !== "reaction") stopReactionGame();
   if (name !== "snake") stopSnakeGame();
@@ -27,11 +60,19 @@ function goTo(name) {
 }
 
 function getHighscore() {
-  return Number(localStorage.getItem("miniArcadeReactionHighscore") || 0);
+  return getBest("reaction");
 }
 
 function updateHighscoreUI() {
   storedHighscore.textContent = getHighscore();
+
+  const reactionBest = document.querySelector("#reactionBest");
+  const memoryBest = document.querySelector("#memoryBest");
+  const snakeBest = document.querySelector("#snakeBest");
+
+  if (reactionBest) reactionBest.textContent = getBest("reaction");
+  if (memoryBest) memoryBest.textContent = getBest("memory");
+  if (snakeBest) snakeBest.textContent = getBest("snake");
 }
 
 document.querySelectorAll("[data-game]").forEach(button => {
@@ -39,26 +80,22 @@ document.querySelectorAll("[data-game]").forEach(button => {
     if (button.dataset.game === "reaction") {
       goTo("reaction");
       initReactionGame({
-        onGameOver: score => {
-          document.querySelector("#finalScore").textContent = score;
-          const best = getHighscore();
-          const isNew = score > best;
-          if (isNew) localStorage.setItem("miniArcadeReactionHighscore", score);
-          document.querySelector("#highscoreMessage").textContent =
-            isNew ? "★ NEUER HIGHSCORE! ★" : `BESTER SCORE: ${Math.max(best, score)}`;
-          coinCount.textContent = (1250 + score * 5).toLocaleString("de-DE");
-        }
+        onGameOver: score => finishGame("reaction", score)
       });
     }
 
     if (button.dataset.game === "memory") {
       goTo("memory");
-      initMemoryGame();
+      initMemoryGame({
+        onComplete: score => finishGame("memory", score)
+      });
     }
 
     if (button.dataset.game === "snake") {
       goTo("snake");
-      initSnakeGame();
+      initSnakeGame({
+        onGameOver: score => finishGame("snake", score)
+      });
     }
   });
 });
@@ -72,7 +109,9 @@ document.querySelector("#snakeResetButton").addEventListener("click", () => init
 document.querySelector("#gameOverMenuButton").addEventListener("click", () => goTo("menu"));
 document.querySelector("#playAgainButton").addEventListener("click", () => {
   goTo("reaction");
-  initReactionGame();
+  initReactionGame({
+    onGameOver: score => finishGame("reaction", score)
+  });
 });
 document.querySelector("#highscoreButton").addEventListener("click", () => {
   updateHighscoreUI();
@@ -91,9 +130,9 @@ soundToggle.addEventListener("change", () => {
 });
 
 document.querySelector("#resetScoreButton").addEventListener("click", () => {
-  localStorage.removeItem("miniArcadeReactionHighscore");
-  updateHighscoreUI();
-  alert("Highscore wurde zurückgesetzt.");
+  resetProfile();
+  updateProfileUI();
+  alert("Profil, Coins, XP und Highscores wurden zurückgesetzt.");
 });
 
 updateHighscoreUI();

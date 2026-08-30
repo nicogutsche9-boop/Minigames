@@ -16,6 +16,7 @@ let score = 0;
 let running = false;
 let loopId = null;
 let initialized = false;
+let onGameOver = null;
 
 const scoreEl = document.querySelector("#snakeScore");
 const lengthEl = document.querySelector("#snakeLength");
@@ -139,6 +140,7 @@ function endGame() {
   stopLoop();
 
   gameOverText.textContent = `Score: ${score} · Länge: ${snake.length}`;
+  if (onGameOver) onGameOver(score);
   gameOverPanel.classList.remove("hidden");
   draw(true);
 }
@@ -218,7 +220,9 @@ function roundRect(context, x, y, width, height, radius) {
   context.closePath();
 }
 
-export function initSnakeGame() {
+export function initSnakeGame(options = {}) {
+  onGameOver = options.onGameOver || onGameOver;
+
   if (!initialized) {
     window.addEventListener("keydown", handleKey);
     initialized = true;

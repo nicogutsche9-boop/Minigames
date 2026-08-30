@@ -36,3 +36,14 @@ Danach `http://localhost:8000` öffnen.
 Das Repository kann direkt über GitHub Pages veröffentlicht werden:
 
 Settings → Pages → Deploy from a branch → `main` → `/ (root)`.
+
+
+## 🏆 Gemeinsames Profil
+
+Alle drei Spiele verwenden jetzt ein gemeinsames Profil:
+
+- XP und Level
+- Coins
+- separate Highscores für Reaction, Memory und Snake
+- Belohnungen nach jeder Runde
+- Speicherung im Browser über `localStorage`
