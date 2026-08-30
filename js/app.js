@@ -3,6 +3,7 @@ import { initReactionGame, stopReactionGame } from "./games/reaction.js";
 import { initMemoryGame } from "./games/memory.js";
 import { initSnakeGame, stopSnakeGame } from "./games/snake.js";
 import { initBlockRush, stopBlockRush } from "./games/blockrush.js";
+import { initDropDuel, stopDropDuel } from "./games/dropduel.js";
 import { getProfile, getBest, recordGame, resetProfile, getLevel, getLevelProgress, getAchievements, getChallenges } from "./achievements.js";
 
 const screens = {
