@@ -1,9 +1,4 @@
 import {
-    registerGameStart,
-    registerGameResult
-} from "../arcade/profile.js";
-
-import {
     recordDropDuelResult
 } from "../achievements.js";
 
