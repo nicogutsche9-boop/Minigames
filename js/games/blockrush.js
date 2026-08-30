@@ -1,32 +1,23 @@
-import { recordGame } from "../profile.js";
-
-
 /* =========================================================
+   MINI ARCADE
    BLOCK RUSH
    ========================================================= */
 
 const canvas =
-  document.querySelector("#blockRushCanvas");
+    document.querySelector("#blockRushCanvas");
 
 const ctx =
-  canvas?.getContext("2d");
+    canvas?.getContext("2d");
 
 const nextCanvas =
-  document.querySelector("#blockRushNextCanvas");
+    document.querySelector("#blockRushNextCanvas");
 
 const nextCtx =
-  nextCanvas?.getContext("2d");
-
-
-if (!canvas || !ctx) {
-  throw new Error(
-    "blockRushCanvas wurde nicht gefunden."
-  );
-}
+    nextCanvas?.getContext("2d");
 
 
 /* =========================================================
-   SPIELKONSTANTEN
+   SPIELFELD
    ========================================================= */
 
 const COLS = 10;
@@ -40,68 +31,68 @@ const CELL = 30;
 
 const COLORS = {
 
-  I: "#42e8ff",
+    I: "#42e8ff",
 
-  J: "#5578ff",
+    J: "#5578ff",
 
-  L: "#ff9d42",
+    L: "#ff9d42",
 
-  O: "#ffe45c",
+    O: "#ffe45c",
 
-  S: "#4dff88",
+    S: "#4dff88",
 
-  T: "#c26cff",
+    T: "#c26cff",
 
-  Z: "#ff5570"
+    Z: "#ff5570"
 
 };
 
 
 /* =========================================================
-   TETROMINO FORMEN
+   TETROMINOS
    ========================================================= */
 
 const SHAPES = {
 
-  I: [
-    [1, 1, 1, 1]
-  ],
+    I: [
+        [1, 1, 1, 1]
+    ],
 
-  J: [
-    [1, 0, 0],
-    [1, 1, 1]
-  ],
+    J: [
+        [1, 0, 0],
+        [1, 1, 1]
+    ],
 
-  L: [
-    [0, 0, 1],
-    [1, 1, 1]
-  ],
+    L: [
+        [0, 0, 1],
+        [1, 1, 1]
+    ],
 
-  O: [
-    [1, 1],
-    [1, 1]
-  ],
+    O: [
+        [1, 1],
+        [1, 1]
+    ],
 
-  S: [
-    [0, 1, 1],
-    [1, 1, 0]
-  ],
+    S: [
+        [0, 1, 1],
+        [1, 1, 0]
+    ],
 
-  T: [
-    [0, 1, 0],
-    [1, 1, 1]
-  ],
+    T: [
+        [0, 1, 0],
+        [1, 1, 1]
+    ],
 
-  Z: [
-    [1, 1, 0],
-    [0, 1, 1]
-  ]
+    Z: [
+        [1, 1, 0],
+        [0, 1, 1]
+    ]
 
 };
 
 
 /* =========================================================
-   SPIELSTATUS
+   STATUS
    ========================================================= */
 
 let board = [];
@@ -120,69 +111,24 @@ let running = false;
 
 let loopId = null;
 
-let initialized = false;
-
 let onGameOver = null;
 
-
-/* =========================================================
-   HTML ELEMENTE
-   ========================================================= */
-
-const scoreEl =
-  document.querySelector(
-    "#blockRushScore"
-  );
-
-const levelEl =
-  document.querySelector(
-    "#blockRushLevel"
-  );
-
-const linesEl =
-  document.querySelector(
-    "#blockRushLines"
-  );
-
-const overlay =
-  document.querySelector(
-    "#blockRushOverlay"
-  );
-
-const gameOverPanel =
-  document.querySelector(
-    "#blockRushGameOver"
-  );
-
-const gameOverText =
-  document.querySelector(
-    "#blockRushGameOverText"
-  );
-
-const startButton =
-  document.querySelector(
-    "#startBlockRushButton"
-  );
-
-const restartButton =
-  document.querySelector(
-    "#blockRushRestartButton"
-  );
+let initialized = false;
 
 
 /* =========================================================
-   NEUES SPIELFELD
+   BOARD ERSTELLEN
    ========================================================= */
 
 function newBoard() {
 
-  return Array.from(
-    {
-      length: ROWS
-    },
-    () =>
-      Array(COLS).fill(null)
-  );
+    return Array.from(
+        {
+            length: ROWS
+        },
+        () =>
+            Array(COLS).fill(null)
+    );
 
 }
 
@@ -193,15 +139,14 @@ function newBoard() {
 
 function randomType() {
 
-  const types =
-    Object.keys(SHAPES);
+    const types =
+        Object.keys(SHAPES);
 
-  return types[
-    Math.floor(
-      Math.random() *
-      types.length
-    )
-  ];
+    return types[
+        Math.floor(
+            Math.random() * types.length
+        )
+    ];
 
 }
 
@@ -211,32 +156,31 @@ function randomType() {
    ========================================================= */
 
 function createPiece(
-  type = randomType()
+    type = randomType()
 ) {
 
-  const shape =
-    SHAPES[type].map(
-      row => [...row]
-    );
+    const shape =
+        SHAPES[type].map(
+            row => [...row]
+        );
 
+    return {
 
-  return {
+        type,
 
-    type,
+        shape,
 
-    shape,
+        x:
+            Math.floor(
+                (
+                    COLS -
+                    shape[0].length
+                ) / 2
+            ),
 
-    x:
-      Math.floor(
-        (
-          COLS -
-          shape[0].length
-        ) / 2
-      ),
+        y: 0
 
-    y: 0
-
-  };
+    };
 
 }
 
@@ -247,12 +191,12 @@ function createPiece(
 
 function rotateMatrix(matrix) {
 
-  return matrix[0].map(
-    (_, i) =>
-      matrix
-        .map(row => row[i])
-        .reverse()
-  );
+    return matrix[0].map(
+        (_, index) =>
+            matrix
+                .map(row => row[index])
+                .reverse()
+    );
 
 }
 
@@ -262,95 +206,96 @@ function rotateMatrix(matrix) {
    ========================================================= */
 
 function collides(
-  piece,
-  dx = 0,
-  dy = 0,
-  shape = piece.shape
+    piece,
+    dx = 0,
+    dy = 0,
+    shape = piece.shape
 ) {
 
-  for (
-    let y = 0;
-    y < shape.length;
-    y++
-  ) {
-
     for (
-      let x = 0;
-      x < shape[y].length;
-      x++
+        let y = 0;
+        y < shape.length;
+        y++
     ) {
 
-      if (!shape[y][x]) {
-        continue;
-      }
+        for (
+            let x = 0;
+            x < shape[y].length;
+            x++
+        ) {
+
+            if (!shape[y][x]) {
+                continue;
+            }
 
 
-      const nx =
-        piece.x +
-        x +
-        dx;
+            const nx =
+                piece.x +
+                x +
+                dx;
 
-      const ny =
-        piece.y +
-        y +
-        dy;
-
-
-      if (
-        nx < 0 ||
-        nx >= COLS ||
-        ny >= ROWS
-      ) {
-
-        return true;
-
-      }
+            const ny =
+                piece.y +
+                y +
+                dy;
 
 
-      if (
-        ny >= 0 &&
-        board[ny][nx]
-      ) {
+            if (
+                nx < 0 ||
+                nx >= COLS ||
+                ny >= ROWS
+            ) {
 
-        return true;
+                return true;
 
-      }
+            }
+
+
+            if (
+                ny >= 0 &&
+                board[ny][nx]
+            ) {
+
+                return true;
+
+            }
+
+        }
 
     }
 
-  }
 
-
-  return false;
+    return false;
 
 }
 
 
 /* =========================================================
-   STEIN ERZEUGEN
+   NÄCHSTEN STEIN ERZEUGEN
    ========================================================= */
 
 function spawn() {
 
-  current =
-    createPiece(
-      nextType ||
-      randomType()
-    );
+    current =
+        createPiece(
+            nextType ||
+            randomType()
+        );
+
+    nextType =
+        randomType();
 
 
-  nextType =
-    randomType();
+    drawNext();
 
 
-  drawNext();
+    if (
+        collides(current)
+    ) {
 
+        endGame();
 
-  if (collides(current)) {
-
-    endGame();
-
-  }
+    }
 
 }
 
@@ -361,29 +306,29 @@ function spawn() {
 
 function move(dx) {
 
-  if (
-    !running ||
-    !current
-  ) {
+    if (
+        !running ||
+        !current
+    ) {
 
-    return;
+        return;
 
-  }
+    }
 
 
-  if (
-    !collides(
-      current,
-      dx,
-      0
-    )
-  ) {
+    if (
+        !collides(
+            current,
+            dx,
+            0
+        )
+    ) {
 
-    current.x += dx;
+        current.x += dx;
 
-    draw();
+        draw();
 
-  }
+    }
 
 }
 
@@ -394,37 +339,39 @@ function move(dx) {
 
 function softDrop() {
 
-  if (
-    !running ||
-    !current
-  ) {
+    if (
+        !running ||
+        !current
+    ) {
 
-    return;
+        return;
 
-  }
+    }
 
 
-  if (
-    !collides(
-      current,
-      0,
-      1
-    )
-  ) {
+    if (
+        !collides(
+            current,
+            0,
+            1
+        )
+    ) {
 
-    current.y++;
+        current.y++;
 
-    score += 1;
+        score += 1;
 
-    updateUI();
+        updateUI();
 
-    draw();
+        draw();
 
-  } else {
+    }
 
-    lockPiece();
+    else {
 
-  }
+        lockPiece();
+
+    }
 
 }
 
@@ -435,58 +382,64 @@ function softDrop() {
 
 function rotate() {
 
-  if (
-    !running ||
-    !current ||
-    current.type === "O"
-  ) {
-
-    return;
-
-  }
-
-
-  const rotated =
-    rotateMatrix(
-      current.shape
-    );
-
-
-  const kicks = [
-    0,
-    -1,
-    1,
-    -2,
-    2
-  ];
-
-
-  for (
-    const kick of kicks
-  ) {
-
     if (
-      !collides(
-        current,
-        kick,
-        0,
-        rotated
-      )
+        !running ||
+        !current ||
+        current.type === "O"
     ) {
 
-      current.shape =
-        rotated;
-
-      current.x +=
-        kick;
-
-      draw();
-
-      return;
+        return;
 
     }
 
-  }
+
+    const rotated =
+        rotateMatrix(
+            current.shape
+        );
+
+
+    /*
+       Kleine Wall-Kicks,
+       damit Steine auch nahe
+       am Rand gedreht werden können.
+    */
+
+    const kicks = [
+        0,
+        -1,
+        1,
+        -2,
+        2
+    ];
+
+
+    for (
+        const kick of kicks
+    ) {
+
+        if (
+            !collides(
+                current,
+                kick,
+                0,
+                rotated
+            )
+        ) {
+
+            current.shape =
+                rotated;
+
+            current.x +=
+                kick;
+
+            draw();
+
+            return;
+
+        }
+
+    }
 
 }
 
@@ -497,39 +450,39 @@ function rotate() {
 
 function hardDrop() {
 
-  if (
-    !running ||
-    !current
-  ) {
+    if (
+        !running ||
+        !current
+    ) {
 
-    return;
+        return;
 
-  }
-
-
-  let distance = 0;
+    }
 
 
-  while (
-    !collides(
-      current,
-      0,
-      1
-    )
-  ) {
-
-    current.y++;
-
-    distance++;
-
-  }
+    let distance = 0;
 
 
-  score +=
-    distance * 2;
+    while (
+        !collides(
+            current,
+            0,
+            1
+        )
+    ) {
+
+        current.y++;
+
+        distance++;
+
+    }
 
 
-  lockPiece();
+    score +=
+        distance * 2;
+
+
+    lockPiece();
 
 }
 
@@ -540,63 +493,69 @@ function hardDrop() {
 
 function lockPiece() {
 
-  if (!current) {
-    return;
-  }
+    if (!current) {
+        return;
+    }
 
-
-  for (
-    let y = 0;
-    y < current.shape.length;
-    y++
-  ) {
 
     for (
-      let x = 0;
-      x < current.shape[y].length;
-      x++
+        let y = 0;
+        y < current.shape.length;
+        y++
     ) {
 
-      if (
-        !current.shape[y][x]
-      ) {
+        for (
+            let x = 0;
+            x < current.shape[y].length;
+            x++
+        ) {
 
-        continue;
+            if (
+                !current.shape[y][x]
+            ) {
 
-      }
+                continue;
 
-
-      const nx =
-        current.x + x;
-
-      const ny =
-        current.y + y;
+            }
 
 
-      if (
-        ny >= 0 &&
-        ny < ROWS &&
-        nx >= 0 &&
-        nx < COLS
-      ) {
+            const nx =
+                current.x + x;
 
-        board[ny][nx] =
-          current.type;
+            const ny =
+                current.y + y;
 
-      }
+
+            if (
+                ny >= 0 &&
+                ny < ROWS &&
+                nx >= 0 &&
+                nx < COLS
+            ) {
+
+                board[ny][nx] =
+                    current.type;
+
+            }
+
+        }
 
     }
 
-  }
+
+    clearLines();
 
 
-  clearLines();
+    if (!running) {
+        return;
+    }
 
-  spawn();
 
-  updateUI();
+    spawn();
 
-  draw();
+    updateUI();
+
+    draw();
 
 }
 
@@ -607,118 +566,106 @@ function lockPiece() {
 
 function clearLines() {
 
-  let cleared = 0;
+    let cleared = 0;
 
 
-  board =
-    board.filter(
-      row => {
+    board =
+        board.filter(row => {
 
-        if (
-          row.every(Boolean)
-        ) {
+            if (
+                row.every(Boolean)
+            ) {
 
-          cleared++;
+                cleared++;
 
-          return false;
+                return false;
 
-        }
+            }
 
+            return true;
 
-        return true;
-
-      }
-    );
+        });
 
 
-  while (
-    board.length < ROWS
-  ) {
+    while (
+        board.length < ROWS
+    ) {
 
-    board.unshift(
-      Array(COLS).fill(null)
-    );
+        board.unshift(
+            Array(COLS).fill(null)
+        );
 
-  }
-
-
-  if (!cleared) {
-
-    return;
-
-  }
+    }
 
 
-  const rewards = {
-
-    1: 100,
-
-    2: 300,
-
-    3: 500,
-
-    4: 800
-
-  };
+    if (!cleared) {
+        return;
+    }
 
 
-  score +=
-    (
-      rewards[cleared] ||
-      1000
-    ) * level;
+    const rewards = {
+
+        1: 100,
+
+        2: 300,
+
+        3: 500,
+
+        4: 800
+
+    };
 
 
-  lines +=
-    cleared;
+    score +=
+        (
+            rewards[cleared] ||
+            1000
+        ) * level;
 
 
-  level =
-    Math.floor(
-      lines / 10
-    ) + 1;
+    lines += cleared;
 
 
-  restartLoop();
+    level =
+        Math.floor(
+            lines / 10
+        ) + 1;
 
-  updateUI();
+
+    restartLoop();
 
 }
 
 
 /* =========================================================
-   FALLGESCHWINDIGKEIT NEU SETZEN
+   SPIELGESCHWINDIGKEIT
    ========================================================= */
 
 function restartLoop() {
 
-  if (!running) {
-    return;
-  }
+    if (!running) {
+        return;
+    }
 
 
-  if (loopId !== null) {
-
-    clearInterval(
-      loopId
-    );
-
-  }
+    stopLoop();
 
 
-  const speed =
-    Math.max(
-      80,
-      700 -
-      (level - 1) * 55
-    );
+    const speed =
+        Math.max(
+            80,
+            700 -
+            (
+                level - 1
+            ) * 55
+        );
 
 
-  loopId =
-    setInterval(
-      softDrop,
-      speed
-    );
+    loopId =
+        setInterval(
+            softDrop,
+            speed
+        );
 
 }
 
@@ -729,243 +676,264 @@ function restartLoop() {
 
 function updateUI() {
 
-  if (scoreEl) {
+    const scoreElement =
+        document.querySelector(
+            "#blockRushScore"
+        );
 
-    scoreEl.textContent =
-      score;
+    const levelElement =
+        document.querySelector(
+            "#blockRushLevel"
+        );
 
-  }
-
-
-  if (levelEl) {
-
-    levelEl.textContent =
-      level;
-
-  }
+    const linesElement =
+        document.querySelector(
+            "#blockRushLines"
+        );
 
 
-  if (linesEl) {
+    if (scoreElement) {
 
-    linesEl.textContent =
-      lines;
+        scoreElement.textContent =
+            score;
 
-  }
+    }
+
+
+    if (levelElement) {
+
+        levelElement.textContent =
+            level;
+
+    }
+
+
+    if (linesElement) {
+
+        linesElement.textContent =
+            lines;
+
+    }
 
 }
 
 
 /* =========================================================
-   EINZELNE ZELLE ZEICHNEN
+   ZELLE ZEICHNEN
    ========================================================= */
 
 function drawCell(
-  context,
-  x,
-  y,
-  type,
-  size
+    context,
+    x,
+    y,
+    type,
+    size
 ) {
 
-  context.fillStyle =
-    COLORS[type];
+    if (!context) {
+        return;
+    }
 
 
-  context.fillRect(
-
-    x * size + 1,
-
-    y * size + 1,
-
-    size - 2,
-
-    size - 2
-
-  );
+    context.fillStyle =
+        COLORS[type];
 
 
-  context.fillStyle =
-    "rgba(255,255,255,.22)";
+    context.fillRect(
+        x * size + 1,
+        y * size + 1,
+        size - 2,
+        size - 2
+    );
 
 
-  context.fillRect(
+    /*
+       Heller Glanz oben
+    */
 
-    x * size + 3,
-
-    y * size + 3,
-
-    size - 7,
-
-    4
-
-  );
+    context.fillStyle =
+        "rgba(255,255,255,.22)";
 
 
-  context.strokeStyle =
-    "rgba(0,0,0,.22)";
+    context.fillRect(
+        x * size + 3,
+        y * size + 3,
+        size - 7,
+        4
+    );
 
 
-  context.strokeRect(
+    /*
+       Dunkler Rand
+    */
 
-    x * size + 1,
+    context.strokeStyle =
+        "rgba(0,0,0,.22)";
 
-    y * size + 1,
 
-    size - 2,
-
-    size - 2
-
-  );
+    context.strokeRect(
+        x * size + 1,
+        y * size + 1,
+        size - 2,
+        size - 2
+    );
 
 }
 
 
 /* =========================================================
-   HAUPTSPIELFELD ZEICHNEN
+   SPIELFELD ZEICHNEN
    ========================================================= */
 
 function draw() {
 
-  ctx.fillStyle =
-    "#03080a";
+    if (
+        !ctx ||
+        !canvas
+    ) {
 
-
-  ctx.fillRect(
-
-    0,
-
-    0,
-
-    canvas.width,
-
-    canvas.height
-
-  );
-
-
-  /* -------------------------------------------------------
-     GRID
-     ------------------------------------------------------- */
-
-  ctx.strokeStyle =
-    "rgba(120,150,220,.08)";
-
-
-  for (
-    let x = 1;
-    x < COLS;
-    x++
-  ) {
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      x * CELL,
-      0
-    );
-
-    ctx.lineTo(
-      x * CELL,
-      canvas.height
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  for (
-    let y = 1;
-    y < ROWS;
-    y++
-  ) {
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      0,
-      y * CELL
-    );
-
-    ctx.lineTo(
-      canvas.width,
-      y * CELL
-    );
-
-    ctx.stroke();
-
-  }
-
-
-  /* -------------------------------------------------------
-     FESTE BLÖCKE
-     ------------------------------------------------------- */
-
-  board.forEach(
-    (row, y) => {
-
-      row.forEach(
-        (type, x) => {
-
-          if (type) {
-
-            drawCell(
-              ctx,
-              x,
-              y,
-              type,
-              CELL
-            );
-
-          }
-
-        }
-      );
+        return;
 
     }
-  );
 
 
-  /* -------------------------------------------------------
-     AKTUELLER STEIN
-     ------------------------------------------------------- */
+    /*
+       Hintergrund
+    */
 
-  if (current) {
+    ctx.fillStyle =
+        "#03080a";
 
-    current.shape.forEach(
-      (row, y) => {
 
-        row.forEach(
-          (filled, x) => {
-
-            if (
-              filled &&
-              current.y + y >= 0
-            ) {
-
-              drawCell(
-
-                ctx,
-
-                current.x + x,
-
-                current.y + y,
-
-                current.type,
-
-                CELL
-
-              );
-
-            }
-
-          }
-        );
-
-      }
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
     );
 
-  }
+
+    /*
+       Raster vertikal
+    */
+
+    ctx.strokeStyle =
+        "rgba(120,150,220,.08)";
+
+
+    for (
+        let x = 1;
+        x < COLS;
+        x++
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x * CELL,
+            0
+        );
+
+        ctx.lineTo(
+            x * CELL,
+            canvas.height
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /*
+       Raster horizontal
+    */
+
+    for (
+        let y = 1;
+        y < ROWS;
+        y++
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y * CELL
+        );
+
+        ctx.lineTo(
+            canvas.width,
+            y * CELL
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /*
+       Bereits gesetzte Steine
+    */
+
+    board.forEach(
+        (row, y) => {
+
+            row.forEach(
+                (type, x) => {
+
+                    if (type) {
+
+                        drawCell(
+                            ctx,
+                            x,
+                            y,
+                            type,
+                            CELL
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    /*
+       Aktueller Stein
+    */
+
+    if (current) {
+
+        current.shape.forEach(
+            (row, y) => {
+
+                row.forEach(
+                    (filled, x) => {
+
+                        if (
+                            filled &&
+                            current.y + y >= 0
+                        ) {
+
+                            drawCell(
+                                ctx,
+                                current.x + x,
+                                current.y + y,
+                                current.type,
+                                CELL
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    }
 
 }
 
@@ -976,159 +944,124 @@ function draw() {
 
 function drawNext() {
 
-  if (!nextCtx || !nextCanvas) {
-    return;
-  }
+    if (
+        !nextCtx ||
+        !nextCanvas
+    ) {
 
-
-  nextCtx.clearRect(
-
-    0,
-
-    0,
-
-    nextCanvas.width,
-
-    nextCanvas.height
-
-  );
-
-
-  nextCtx.fillStyle =
-    "#050a12";
-
-
-  nextCtx.fillRect(
-
-    0,
-
-    0,
-
-    nextCanvas.width,
-
-    nextCanvas.height
-
-  );
-
-
-  if (!nextType) {
-    return;
-  }
-
-
-  const shape =
-    SHAPES[nextType];
-
-
-  const size = 24;
-
-
-  const offsetX =
-    (
-      nextCanvas.width -
-      shape[0].length *
-      size
-    ) / 2;
-
-
-  const offsetY =
-    (
-      nextCanvas.height -
-      shape.length *
-      size
-    ) / 2;
-
-
-  shape.forEach(
-    (row, y) => {
-
-      row.forEach(
-        (filled, x) => {
-
-          if (!filled) {
-            return;
-          }
-
-
-          nextCtx.fillStyle =
-            COLORS[nextType];
-
-
-          nextCtx.fillRect(
-
-            offsetX +
-            x * size +
-            1,
-
-            offsetY +
-            y * size +
-            1,
-
-            size - 2,
-
-            size - 2
-
-          );
-
-
-          nextCtx.fillStyle =
-            "rgba(255,255,255,.22)";
-
-
-          nextCtx.fillRect(
-
-            offsetX +
-            x * size +
-            3,
-
-            offsetY +
-            y * size +
-            3,
-
-            size - 7,
-
-            4
-
-          );
-
-        }
-      );
+        return;
 
     }
-  );
+
+
+    nextCtx.clearRect(
+        0,
+        0,
+        nextCanvas.width,
+        nextCanvas.height
+    );
+
+
+    nextCtx.fillStyle =
+        "#050a12";
+
+
+    nextCtx.fillRect(
+        0,
+        0,
+        nextCanvas.width,
+        nextCanvas.height
+    );
+
+
+    if (!nextType) {
+        return;
+    }
+
+
+    const shape =
+        SHAPES[nextType];
+
+
+    const size = 24;
+
+
+    const offsetX =
+        (
+            nextCanvas.width -
+            shape[0].length * size
+        ) / 2;
+
+
+    const offsetY =
+        (
+            nextCanvas.height -
+            shape.length * size
+        ) / 2;
+
+
+    shape.forEach(
+        (row, y) => {
+
+            row.forEach(
+                (filled, x) => {
+
+                    if (!filled) {
+                        return;
+                    }
+
+
+                    drawCell(
+                        nextCtx,
+                        (
+                            offsetX / size
+                        ) + x,
+                        (
+                            offsetY / size
+                        ) + y,
+                        nextType,
+                        size
+                    );
+
+                }
+            );
+
+        }
+    );
 
 }
 
 
 /* =========================================================
-   SPIEL ZURÜCKSETZEN
+   ZUSTAND ZURÜCKSETZEN
    ========================================================= */
 
 function resetState() {
 
-  board =
-    newBoard();
+    board =
+        newBoard();
 
 
-  current = null;
+    current =
+        null;
 
 
-  nextType =
-    randomType();
+    nextType =
+        randomType();
 
 
-  score = 0;
+    score = 0;
 
-  lines = 0;
+    lines = 0;
 
-  level = 1;
+    level = 1;
 
 
-  updateUI();
+    updateUI();
 
-  spawn();
+    spawn();
 
-  draw();
+    draw();
 
 }
 
@@ -1139,32 +1072,37 @@ function resetState() {
 
 function startGame() {
 
-  stopLoop();
-
-  resetState();
-
-  running = true;
+    stopLoop();
 
 
-  if (overlay) {
+    running = true;
 
-    overlay.classList.add(
-      "hidden"
+
+    resetState();
+
+
+    const overlay =
+        document.querySelector(
+            "#blockRushOverlay"
+        );
+
+    const gameOver =
+        document.querySelector(
+            "#blockRushGameOver"
+        );
+
+
+    overlay?.classList.add(
+        "hidden"
     );
 
-  }
 
-
-  if (gameOverPanel) {
-
-    gameOverPanel.classList.add(
-      "hidden"
+    gameOver?.classList.add(
+        "hidden"
     );
 
-  }
 
-
-  restartLoop();
+    restartLoop();
 
 }
 
@@ -1175,15 +1113,17 @@ function startGame() {
 
 function stopLoop() {
 
-  if (loopId !== null) {
+    if (
+        loopId !== null
+    ) {
 
-    clearInterval(
-      loopId
-    );
+        clearInterval(
+            loopId
+        );
 
-    loopId = null;
+        loopId = null;
 
-  }
+    }
 
 }
 
@@ -1194,74 +1134,65 @@ function stopLoop() {
 
 function endGame() {
 
-  if (!running) {
-    return;
-  }
+    if (!running) {
+        return;
+    }
 
 
-  running = false;
-
-  stopLoop();
+    running = false;
 
 
-  /*
-     SCORE AN DAS ZENTRALE
-     PROFIL-SYSTEM ÜBERGEBEN
-  */
-
-  let result = null;
+    stopLoop();
 
 
-  try {
+    const gameOverText =
+        document.querySelector(
+            "#blockRushGameOverText"
+        );
 
-    result =
-      recordGame(
-        "blockrush",
-        score
-      );
 
-  } catch (error) {
+    if (gameOverText) {
 
-    console.error(
-      "Block Rush: Profil konnte nicht aktualisiert werden.",
-      error
+        gameOverText.textContent =
+            `Score: ${score} · ${lines} Linien`;
+
+    }
+
+
+    /*
+       WICHTIG:
+
+       Das Spiel selbst verändert
+       NICHT das Profil.
+
+       app.js bekommt den Score
+       über onGameOver() und kann
+       ihn dort an profile.js
+       weitergeben.
+    */
+
+    if (
+        typeof onGameOver ===
+        "function"
+    ) {
+
+        onGameOver(score);
+
+    }
+
+
+    const gameOver =
+        document.querySelector(
+            "#blockRushGameOver"
+        );
+
+
+    gameOver?.classList.remove(
+        "hidden"
     );
 
-  }
 
-
-  if (gameOverText) {
-
-    gameOverText.textContent =
-      `Score: ${score} · ${lines} Linien`;
-
-  }
-
-
-  /*
-     Callback für app.js
-  */
-
-  if (onGameOver) {
-
-    onGameOver(
-      score,
-      result
-    );
-
-  }
-
-
-  if (gameOverPanel) {
-
-    gameOverPanel.classList.remove(
-      "hidden"
-    );
-
-  }
-
-
-  draw();
+    draw();
 
 }
 
@@ -1272,83 +1203,91 @@ function endGame() {
 
 function handleKey(event) {
 
-  if (!running) {
-    return;
-  }
+    if (!running) {
+        return;
+    }
 
 
-  const key =
-    event.key;
+    const keys = [
+
+        "ArrowLeft",
+
+        "ArrowRight",
+
+        "ArrowDown",
+
+        "ArrowUp",
+
+        " ",
+
+        "Spacebar"
+
+    ];
 
 
-  const lowerKey =
-    key.toLowerCase();
+    if (
+        keys.includes(
+            event.key
+        )
+    ) {
+
+        event.preventDefault();
+
+    }
 
 
-  if (
-    [
-      "ArrowLeft",
-      "ArrowRight",
-      "ArrowDown",
-      "ArrowUp",
-      " ",
-      "Spacebar"
-    ].includes(key)
-  ) {
-
-    event.preventDefault();
-
-  }
+    const key =
+        event.key.toLowerCase();
 
 
-  if (
-    key === "ArrowLeft" ||
-    lowerKey === "a"
-  ) {
+    if (
+        event.key === "ArrowLeft" ||
+        key === "a"
+    ) {
 
-    move(-1);
+        move(-1);
 
-  }
-
-
-  if (
-    key === "ArrowRight" ||
-    lowerKey === "d"
-  ) {
-
-    move(1);
-
-  }
+    }
 
 
-  if (
-    key === "ArrowDown" ||
-    lowerKey === "s"
-  ) {
+    if (
+        event.key === "ArrowRight" ||
+        key === "d"
+    ) {
 
-    softDrop();
+        move(1);
 
-  }
-
-
-  if (
-    key === "ArrowUp" ||
-    lowerKey === "w"
-  ) {
-
-    rotate();
-
-  }
+    }
 
 
-  if (
-    key === " " ||
-    key === "Spacebar"
-  ) {
+    if (
+        event.key === "ArrowDown" ||
+        key === "s"
+    ) {
 
-    hardDrop();
+        softDrop();
 
-  }
+    }
+
+
+    if (
+        event.key === "ArrowUp" ||
+        key === "w"
+    ) {
+
+        rotate();
+
+    }
+
+
+    if (
+        event.key === " " ||
+        event.key === "Spacebar"
+    ) {
+
+        hardDrop();
+
+    }
 
 }
 
@@ -1358,119 +1297,177 @@ function handleKey(event) {
    ========================================================= */
 
 export function initBlockRush(
-  options = {}
+    options = {}
 ) {
 
-  onGameOver =
-    options.onGameOver ||
-    null;
+    /*
+       Callback aus app.js übernehmen.
+    */
+
+    if (
+        typeof options.onGameOver ===
+        "function"
+    ) {
+
+        onGameOver =
+            options.onGameOver;
+
+    }
 
 
-  if (!initialized) {
+    /*
+       Tastatur nur einmal registrieren.
+    */
 
-    window.addEventListener(
-      "keydown",
-      handleKey
-    );
+    if (!initialized) {
 
+        window.addEventListener(
+            "keydown",
+            handleKey
+        );
 
-    initialized = true;
+        initialized = true;
 
-  }
-
-
-  if (startButton) {
-
-    startButton.onclick =
-      startGame;
-
-  }
+    }
 
 
-  if (restartButton) {
+    /*
+       START BUTTON
+    */
 
-    restartButton.onclick =
-      startGame;
-
-  }
-
-
-  /* -------------------------------------------------------
-     MOBILE / TOUCH BUTTONS
-     ------------------------------------------------------- */
-
-  document
-    .querySelectorAll(
-      "[data-br-action]"
-    )
-    .forEach(button => {
-
-      button.onclick = () => {
-
-        const action =
-          button.dataset.brAction;
+    const startButton =
+        document.querySelector(
+            "#startBlockRushButton"
+        );
 
 
-        if (action === "left") {
+    if (startButton) {
 
-          move(-1);
+        startButton.onclick =
+            startGame;
 
-        }
-
-
-        if (action === "right") {
-
-          move(1);
-
-        }
+    }
 
 
-        if (action === "down") {
+    /*
+       RESTART BUTTON
+    */
 
-          softDrop();
-
-        }
-
-
-        if (action === "rotate") {
-
-          rotate();
-
-        }
+    const restartButton =
+        document.querySelector(
+            "#blockRushRestartButton"
+        );
 
 
-        if (action === "drop") {
+    if (restartButton) {
 
-          hardDrop();
+        restartButton.onclick =
+            startGame;
 
-        }
-
-      };
-
-    });
+    }
 
 
-  resetState();
+    /*
+       MOBILE / TOUCH CONTROLS
+    */
 
-  running = false;
+    document
+        .querySelectorAll(
+            "[data-br-action]"
+        )
+        .forEach(button => {
+
+            /*
+               Alte Handler ersetzen,
+               damit beim erneuten Öffnen
+               keine doppelten Klicks entstehen.
+            */
+
+            button.onclick =
+                () => {
+
+                    const action =
+                        button.dataset.brAction;
 
 
-  if (overlay) {
+                    if (
+                        action === "left"
+                    ) {
 
-    overlay.classList.remove(
-      "hidden"
-    );
+                        move(-1);
 
-  }
+                    }
 
 
-  if (gameOverPanel) {
+                    if (
+                        action === "right"
+                    ) {
 
-    gameOverPanel.classList.add(
-      "hidden"
-    );
+                        move(1);
 
-  }
+                    }
+
+
+                    if (
+                        action === "down"
+                    ) {
+
+                        softDrop();
+
+                    }
+
+
+                    if (
+                        action === "rotate"
+                    ) {
+
+                        rotate();
+
+                    }
+
+
+                    if (
+                        action === "drop"
+                    ) {
+
+                        hardDrop();
+
+                    }
+
+                };
+
+        });
+
+
+    /*
+       Anfangszustand anzeigen.
+    */
+
+    resetState();
+
+
+    running = false;
+
+
+    stopLoop();
+
+
+    document
+        .querySelector(
+            "#blockRushOverlay"
+        )
+        ?.classList.remove(
+            "hidden"
+        );
+
+
+    document
+        .querySelector(
+            "#blockRushGameOver"
+        )
+        ?.classList.add(
+            "hidden"
+        );
 
 }
 
@@ -1481,8 +1478,8 @@ export function initBlockRush(
 
 export function stopBlockRush() {
 
-  running = false;
+    running = false;
 
-  stopLoop();
+    stopLoop();
 
 }
