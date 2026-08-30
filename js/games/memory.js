@@ -1,212 +1,880 @@
-const SYMBOLS = [
-  "🍒", "🍋", "🍉", "⭐", "🚀", "🎮", "👾", "💎",
-  "🍕", "🎯", "🎧", "⚡", "🔥", "🌈", "🪐", "🦄",
-  "🍩", "🏀", "🎲", "🛸", "🐱", "🦊", "🐼", "🐸",
-  "🍀", "🌙", "☀️", "💡", "🎸", "🏆", "💜", "🤖"
-];
+import {
+  registerGameStart,
+  registerGameResult
+} from "../arcade/profile.js";
 
-const MODES = {
-  8: { name: "CLASSIC", pairs: 8 },
-  16: { name: "PRO", pairs: 16 },
-  32: { name: "MEMORY MARATHON", pairs: 32 }
+
+/* =========================================================
+   MEMORY
+   ========================================================= */
+
+const MEMORY_MODES = {
+  8: {
+    pairs: 8,
+    label: "CLASSIC · 8 PAARE"
+  },
+
+  16: {
+    pairs: 16,
+    label: "16 PAARE"
+  },
+
+  32: {
+    pairs: 32,
+    label: "🔥 32 PAARE"
+  }
 };
 
-const EVENT_END = new Date("2026-09-13T23:59:59");
 
-let selectedPairs = 8;
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+let pairsCount = 8;
+
 let cards = [];
-let firstCard = null;
-let secondCard = null;
-let lockBoard = false;
-let matchedPairs = 0;
+
+let flippedCards = [];
+
+let matchedCards = [];
+
 let moves = 0;
+
+let running = false;
+
+let locked = false;
+
 let initialized = false;
-let onComplete = null;
 
-const board = document.querySelector("#memoryBoard");
-const pairsValue = document.querySelector("#memoryPairs");
-const pairTotalValue = document.querySelector("#memoryPairTotal");
-const movesValue = document.querySelector("#memoryMoves");
-const status = document.querySelector("#memoryStatus");
-const modeTitle = document.querySelector("#memoryModeTitle");
-const eventCountdown = document.querySelector("#memoryEventCountdown");
+let gameStartTime = 0;
 
-function shuffle(items) {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
+
+/* =========================================================
+   HTML
+   ========================================================= */
+
+const board =
+  document.querySelector("#memoryBoard");
+
+const pairsElement =
+  document.querySelector("#memoryPairs");
+
+const pairTotalElement =
+  document.querySelector("#memoryPairTotal");
+
+const movesElement =
+  document.querySelector("#memoryMoves");
+
+const statusElement =
+  document.querySelector("#memoryStatus");
+
+const modeTitle =
+  document.querySelector("#memoryModeTitle");
+
+const modeButtons =
+  document.querySelectorAll(
+    ".memory-mode-button"
+  );
+
+const resetButton =
+  document.querySelector("#memoryResetButton");
+
+const menuButton =
+  document.querySelector("#memoryMenuButton");
+
+
+/* =========================================================
+   SYMBOLE
+   ========================================================= */
+
+const SYMBOLS = [
+  "👾",
+  "🚀",
+  "⭐",
+  "🎮",
+  "💎",
+  "🔥",
+  "⚡",
+  "🪙",
+  "🍒",
+  "🍀",
+  "💜",
+  "💙",
+  "💚",
+  "🧡",
+  "🎯",
+  "🏆",
+  "🐍",
+  "🧱",
+  "🔵",
+  "🌟",
+  "👽",
+  "🤖",
+  "🎲",
+  "🕹️",
+  "❤️",
+  "☄️",
+  "🌈",
+  "🍉",
+  "🍋",
+  "🍓",
+  "🥝",
+  "🍇"
+];
+
+
+/* =========================================================
+   ZUFALL
+   ========================================================= */
+
+function shuffle(array) {
+
+  const result =
+    [...array];
+
+  for (
+    let i = result.length - 1;
+    i > 0;
+    i--
+  ) {
+
+    const j =
+      Math.floor(
+        Math.random() * (i + 1)
+      );
+
+    [
+      result[i],
+      result[j]
+    ] = [
+      result[j],
+      result[i]
+    ];
+
   }
-  return copy;
+
+  return result;
+
 }
 
-function eventAvailable() {
-  return new Date() < EVENT_END;
+
+/* =========================================================
+   KARTEN ERSTELLEN
+   ========================================================= */
+
+function createCards() {
+
+  const symbols =
+    SYMBOLS.slice(
+      0,
+      pairsCount
+    );
+
+
+  const duplicated = [
+    ...symbols,
+    ...symbols
+  ];
+
+
+  return shuffle(
+    duplicated.map(
+      (symbol, index) => ({
+        id: index,
+        symbol,
+        matched: false,
+        flipped: false
+      })
+    )
+  );
+
 }
 
-function formatRemaining(ms) {
-  if (ms <= 0) return "BEENDET";
-  const totalMinutes = Math.floor(ms / 60000);
-  const days = Math.floor(totalMinutes / 1440);
-  const hours = Math.floor((totalMinutes % 1440) / 60);
-  const minutes = totalMinutes % 60;
-  if (days > 0) return `${days}T ${hours}H`;
-  if (hours > 0) return `${hours}H ${minutes}M`;
-  return `${minutes}M`;
-}
 
-function updateEventUI() {
-  const button = document.querySelector('[data-memory-pairs="32"]');
-  if (!button || !eventCountdown) return;
+/* =========================================================
+   SPIELFELD
+   ========================================================= */
 
-  if (eventAvailable()) {
-    button.disabled = false;
-    button.classList.remove("expired");
-    eventCountdown.textContent = `NOCH ${formatRemaining(EVENT_END - new Date())}`;
-  } else {
-    button.disabled = true;
-    button.classList.add("expired");
-    eventCountdown.textContent = "BEENDET";
-    if (selectedPairs === 32) {
-      selectedPairs = 8;
-      selectModeButton(8);
-      buildBoard();
-    }
-  }
-}
-
-function updateUI() {
-  pairsValue.textContent = matchedPairs;
-  pairTotalValue.textContent = selectedPairs;
-  movesValue.textContent = moves;
-}
-
-function createCard(symbol, index) {
-  const button = document.createElement("button");
-  button.className = "memory-card";
-  button.type = "button";
-  button.dataset.index = index;
-  button.dataset.symbol = symbol;
-  button.setAttribute("aria-label", "Memory-Karte");
-  button.innerHTML = `
-    <span class="memory-card-inner">
-      <span class="memory-face memory-back" aria-hidden="true"></span>
-      <span class="memory-face memory-front">${symbol}</span>
-    </span>
-  `;
-  button.addEventListener("click", () => flipCard(button));
-  return button;
-}
-
-function buildBoard() {
-  if (selectedPairs === 32 && !eventAvailable()) {
-    selectedPairs = 8;
-    selectModeButton(8);
-  }
-
-  const deckSymbols = SYMBOLS.slice(0, selectedPairs);
-  const deck = shuffle([...deckSymbols, ...deckSymbols]);
+function renderBoard() {
 
   board.innerHTML = "";
-  board.className = `memory-board mode-${selectedPairs}`;
-  cards = [];
-  firstCard = null;
-  secondCard = null;
-  lockBoard = false;
-  matchedPairs = 0;
-  moves = 0;
 
-  deck.forEach((symbol, index) => {
-    const card = createCard(symbol, index);
-    cards.push(card);
-    board.appendChild(card);
-  });
+  board.className =
+    `memory-board mode-${pairsCount}`;
 
-  const mode = MODES[selectedPairs];
-  modeTitle.textContent = `${mode.name} · ${selectedPairs} PAARE`;
-  status.textContent = `Finde alle ${selectedPairs} Paare!`;
-  updateUI();
-  updateEventUI();
-}
 
-function flipCard(card) {
-  if (lockBoard || card === firstCard || card.classList.contains("matched")) return;
+  cards.forEach(card => {
 
-  card.classList.add("flipped");
+    const button =
+      document.createElement("button");
 
-  if (!firstCard) {
-    firstCard = card;
-    return;
-  }
+    button.type =
+      "button";
 
-  secondCard = card;
-  moves += 1;
-  updateUI();
-  checkMatch();
-}
+    button.className =
+      "memory-card";
 
-function checkMatch() {
-  const isMatch = firstCard.dataset.symbol === secondCard.dataset.symbol;
 
-  if (isMatch) {
-    firstCard.classList.add("matched");
-    secondCard.classList.add("matched");
-    matchedPairs += 1;
-    updateUI();
+    if (card.flipped) {
 
-    if (matchedPairs === selectedPairs) {
-      const base = selectedPairs * 150;
-      const penalty = Math.max(0, moves - selectedPairs) * 20;
-      const score = Math.max(selectedPairs * 50, base - penalty);
-      status.textContent = `🎉 Geschafft! ${moves} Züge · ${score} Punkte.`;
-      if (onComplete) onComplete(score);
-      return;
+      button.classList.add(
+        "flipped"
+      );
+
     }
 
-    status.textContent = "✓ Paar gefunden!";
-    resetTurn();
-    return;
+
+    if (card.matched) {
+
+      button.classList.add(
+        "matched"
+      );
+
+    }
+
+
+    button.dataset.id =
+      card.id;
+
+
+    button.innerHTML = `
+      <span class="memory-card-inner">
+
+        <span class="memory-card-back">
+          ?
+        </span>
+
+        <span class="memory-card-front">
+          ${card.symbol}
+        </span>
+
+      </span>
+    `;
+
+
+    button.addEventListener(
+      "click",
+      () => flipCard(card.id)
+    );
+
+
+    board.appendChild(
+      button
+    );
+
+  });
+
+}
+
+
+/* =========================================================
+   UI
+   ========================================================= */
+
+function updateUI() {
+
+  pairsElement.textContent =
+    matchedCards.length / 2;
+
+  pairTotalElement.textContent =
+    pairsCount;
+
+  movesElement.textContent =
+    moves;
+
+
+  const mode =
+    MEMORY_MODES[pairsCount];
+
+  if (mode) {
+
+    modeTitle.textContent =
+      mode.label;
+
   }
 
-  lockBoard = true;
-  status.textContent = "Kein Paar …";
+
+  modeButtons.forEach(
+    button => {
+
+      button.classList.toggle(
+        "active",
+        Number(
+          button.dataset.memoryPairs
+        ) === pairsCount
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   STATUS TEXT
+   ========================================================= */
+
+function updateStatus() {
+
+  if (!running) {
+
+    statusElement.textContent =
+      `Finde alle ${pairsCount} Paare!`;
+
+    return;
+
+  }
+
+
+  const found =
+    matchedCards.length / 2;
+
+
+  if (found === pairsCount) {
+
+    statusElement.textContent =
+      "🎉 Alle Paare gefunden!";
+
+    return;
+
+  }
+
+
+  if (locked) {
+
+    statusElement.textContent =
+      "🔎 Prüfe das Paar …";
+
+    return;
+
+  }
+
+
+  if (flippedCards.length === 1) {
+
+    statusElement.textContent =
+      "Finde das passende Paar!";
+
+    return;
+
+  }
+
+
+  statusElement.textContent =
+    `Finde alle ${pairsCount} Paare!`;
+
+}
+
+
+/* =========================================================
+   KARTE AUFDECKEN
+   ========================================================= */
+
+function flipCard(id) {
+
+  if (
+    !running ||
+    locked
+  ) {
+
+    return;
+
+  }
+
+
+  const card =
+    cards.find(
+      item => item.id === id
+    );
+
+
+  if (!card) {
+
+    return;
+
+  }
+
+
+  if (
+    card.flipped ||
+    card.matched
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    flippedCards.length >= 2
+  ) {
+
+    return;
+
+  }
+
+
+  card.flipped = true;
+
+  flippedCards.push(card);
+
+
+  moves++;
+
+  renderBoard();
+  updateUI();
+  updateStatus();
+
+
+  if (
+    flippedCards.length === 2
+  ) {
+
+    checkPair();
+
+  }
+
+}
+
+
+/* =========================================================
+   PAAR PRÜFEN
+   ========================================================= */
+
+function checkPair() {
+
+  const [
+    first,
+    second
+  ] = flippedCards;
+
+
+  locked = true;
+
+  updateStatus();
+
 
   setTimeout(() => {
-    if (firstCard) firstCard.classList.remove("flipped");
-    if (secondCard) secondCard.classList.remove("flipped");
-    resetTurn();
-    status.textContent = "Weiter geht's!";
-  }, selectedPairs >= 32 ? 550 : 750);
+
+    if (
+      first.symbol ===
+      second.symbol
+    ) {
+
+      first.matched = true;
+      second.matched = true;
+
+      matchedCards.push(
+        first,
+        second
+      );
+
+      flippedCards = [];
+
+      locked = false;
+
+      renderBoard();
+      updateUI();
+      updateStatus();
+
+
+      if (
+        matchedCards.length ===
+        cards.length
+      ) {
+
+        finishGame();
+
+      }
+
+      return;
+
+    }
+
+
+    first.flipped = false;
+    second.flipped = false;
+
+    flippedCards = [];
+
+    locked = false;
+
+    renderBoard();
+    updateUI();
+    updateStatus();
+
+  }, 650);
+
 }
 
-function resetTurn() {
-  [firstCard, secondCard] = [null, null];
-  lockBoard = false;
+
+/* =========================================================
+   SCORE
+   ========================================================= */
+
+function calculateScore() {
+
+  /*
+     Weniger Züge = höherer Score.
+
+     Basis:
+     - 8 Paare  -> 1000
+     - 16 Paare -> 2000
+     - 32 Paare -> 4000
+
+     Jeder zusätzliche Zug
+     reduziert den Score.
+
+     Zusätzlich gibt es einen
+     kleinen Zeitbonus.
+  */
+
+
+  const baseScore =
+    pairsCount * 125;
+
+
+  const perfectMoves =
+    pairsCount;
+
+
+  const extraMoves =
+    Math.max(
+      0,
+      moves - perfectMoves
+    );
+
+
+  const movePenalty =
+    extraMoves * 15;
+
+
+  const elapsedSeconds =
+    Math.max(
+      1,
+      Math.floor(
+        (Date.now() - gameStartTime) /
+        1000
+      )
+    );
+
+
+  const timePenalty =
+    Math.floor(
+      elapsedSeconds * 2
+    );
+
+
+  return Math.max(
+    0,
+    baseScore -
+    movePenalty -
+    timePenalty
+  );
+
 }
 
-function selectModeButton(pairs) {
-  if (pairs === 32 && !eventAvailable()) return;
-  selectedPairs = pairs;
-  document.querySelectorAll(".memory-mode-button").forEach(button => {
-    button.classList.toggle("active", Number(button.dataset.memoryPairs) === pairs);
-  });
-}
 
-export function initMemoryGame(options = {}) {
-  onComplete = options.onComplete || onComplete;
+/* =========================================================
+   SPIEL BEENDET
+   ========================================================= */
 
-  if (!initialized) {
-    document.querySelectorAll(".memory-mode-button").forEach(button => {
-      button.addEventListener("click", () => {
-        const pairs = Number(button.dataset.memoryPairs);
-        if (pairs === 32 && !eventAvailable()) return;
-        selectModeButton(pairs);
-        buildBoard();
-      });
-    });
-    setInterval(updateEventUI, 30000);
-    initialized = true;
+function finishGame() {
+
+  if (!running) {
+
+    return;
+
   }
 
-  buildBoard();
+
+  running = false;
+  locked = false;
+
+
+  const score =
+    calculateScore();
+
+
+  statusElement.textContent =
+    `🎉 GESCHAFFT! ${score} Punkte`;
+
+
+  renderBoard();
+  updateUI();
+
+
+  /*
+     Profil-System aktualisieren.
+
+     Memory wird als
+     "memory" registriert.
+  */
+
+  try {
+
+    registerGameResult(
+      "Memory",
+      "win"
+    );
+
+  }
+
+  catch (error) {
+
+    console.warn(
+      "registerGameResult fehlgeschlagen:",
+      error
+    );
+
+  }
+
+
+  /*
+     Falls dein Profil-System
+     recordGame exportiert,
+     wird es hier ebenfalls
+     verwendet.
+  */
+
+  /*
+     Wichtig:
+     Wir versuchen recordGame
+     dynamisch über die globale
+     Arcade-Struktur nicht zu erzwingen.
+
+     Der Score wird deshalb
+     zusätzlich über ein
+     CustomEvent an app.js
+     gemeldet.
+  */
+
+  document.dispatchEvent(
+    new CustomEvent(
+      "memoryGameOver",
+      {
+        detail: {
+          score,
+          moves,
+          pairs: pairsCount
+        }
+      }
+    )
+  );
+
+}
+
+
+/* =========================================================
+   NEUES SPIEL
+   ========================================================= */
+
+function startGame() {
+
+  registerGameStart(
+    "Memory"
+  );
+
+
+  running = true;
+
+  locked = false;
+
+  moves = 0;
+
+  flippedCards = [];
+
+  matchedCards = [];
+
+  gameStartTime =
+    Date.now();
+
+
+  cards =
+    createCards();
+
+
+  updateUI();
+  updateStatus();
+  renderBoard();
+
+}
+
+
+/* =========================================================
+   SPIEL ZURÜCKSETZEN
+   ========================================================= */
+
+function resetGame() {
+
+  startGame();
+
+}
+
+
+/* =========================================================
+   SPIELMODUS
+   ========================================================= */
+
+function setMode(pairs) {
+
+  const newPairs =
+    Number(pairs);
+
+
+  if (
+    !MEMORY_MODES[newPairs]
+  ) {
+
+    return;
+
+  }
+
+
+  pairsCount =
+    newPairs;
+
+
+  localStorage.setItem(
+    "memoryPairs",
+    String(pairsCount)
+  );
+
+
+  startGame();
+
+}
+
+
+/* =========================================================
+   MENÜ
+   ========================================================= */
+
+function goToMenu() {
+
+  running = false;
+  locked = false;
+
+  document.dispatchEvent(
+    new CustomEvent(
+      "memoryMenu"
+    )
+  );
+
+}
+
+
+/* =========================================================
+   INITIALISIERUNG
+   ========================================================= */
+
+export function initMemory() {
+
+  if (initialized) {
+
+    /*
+       Beim erneuten Öffnen
+       wird trotzdem das Board
+       sauber zurückgesetzt.
+    */
+
+    startGame();
+
+    return;
+
+  }
+
+
+  const savedPairs =
+    Number(
+      localStorage.getItem(
+        "memoryPairs"
+      )
+    );
+
+
+  if (
+    MEMORY_MODES[savedPairs]
+  ) {
+
+    pairsCount =
+      savedPairs;
+
+  }
+
+
+  modeButtons.forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          setMode(
+            button.dataset.memoryPairs
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  resetButton?.addEventListener(
+    "click",
+    resetGame
+  );
+
+
+  menuButton?.addEventListener(
+    "click",
+    goToMenu
+  );
+
+
+  initialized = true;
+
+
+  startGame();
+
+}
+
+
+/* =========================================================
+   STOPPEN
+   ========================================================= */
+
+export function stopMemory() {
+
+  running = false;
+
+  locked = false;
+
+}
+
+
+/* =========================================================
+   SCORE-ZUGRIFF
+   ========================================================= */
+
+export function getMemoryState() {
+
+  return {
+
+    score:
+      calculateScore(),
+
+    moves,
+
+    pairs:
+      matchedCards.length / 2,
+
+    totalPairs:
+      pairsCount,
+
+    running
+
+  };
+
 }
