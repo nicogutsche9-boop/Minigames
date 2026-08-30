@@ -160,7 +160,11 @@ document.querySelector("#memoryMenuButton")?.addEventListener("click", () => goT
 document.querySelector("#memoryResetButton")?.addEventListener("click", () => initMemoryGame({ onComplete: score => finishGame("memory", score) }));
 
 document.querySelector("#snakeMenuButton")?.addEventListener("click", () => goTo("menu"));
-document.querySelector("#snakeResetButton")?.addEventListener("click", () => initSnakeGame());
+document.querySelector("#snakeResetButton")?.addEventListener("click", () => {
+  initSnakeGame({
+    onGameOver: score => finishGame("snake", score)
+  });
+});
 document.querySelector("#gameOverMenuButton")?.addEventListener("click", () => goTo("menu"));
 document.querySelector("#playAgainButton")?.addEventListener("click", () => {
   goTo("reaction");
