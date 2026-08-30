@@ -1721,3 +1721,452 @@ button { font: inherit; }
     }
 
 }
+/* =========================================================
+   MINI ARCADE PROFIL
+   ========================================================= */
+
+
+.arcade-profile {
+
+    width:
+        min(650px, 94vw);
+
+    margin:
+        0 auto 22px;
+
+    padding:
+        16px 18px;
+
+    border:
+        1px solid
+        rgba(119,148,221,.25);
+
+    border-radius:
+        20px;
+
+    background:
+        rgba(11,17,34,.82);
+
+    box-shadow:
+        0 15px 35px
+        rgba(0,0,0,.18);
+
+}
+
+
+.arcade-profile-top {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        14px;
+
+}
+
+
+.arcade-level-badge {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        5px;
+
+    width:
+        58px;
+
+    height:
+        58px;
+
+    flex-shrink:
+        0;
+
+    border:
+        1px solid
+        rgba(255,209,48,.45);
+
+    border-radius:
+        16px;
+
+    background:
+        rgba(255,209,48,.10);
+
+    color:
+        #ffd130;
+
+}
+
+
+.arcade-level-badge strong {
+
+    font-size:
+        21px;
+
+}
+
+
+.arcade-profile-info {
+
+    flex:
+        1;
+
+    text-align:
+        left;
+
+}
+
+
+.arcade-profile-info strong {
+
+    display:
+        block;
+
+    font-size:
+        12px;
+
+    letter-spacing:
+        .08em;
+
+}
+
+
+.arcade-profile-info span {
+
+    display:
+        block;
+
+    margin-top:
+        4px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+}
+
+
+.arcade-xp-bar {
+
+    width:
+        100%;
+
+    height:
+        8px;
+
+    margin-top:
+        13px;
+
+    overflow:
+        hidden;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+
+.arcade-xp-progress {
+
+    width:
+        0%;
+
+    height:
+        100%;
+
+    border-radius:
+        inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #596cff,
+            #9b6cff
+        );
+
+    transition:
+        width .4s ease;
+
+}
+
+
+/* =========================================================
+   MINI STATISTIK
+   ========================================================= */
+
+.arcade-mini-stats {
+
+    width:
+        min(650px, 94vw);
+
+    margin:
+        18px auto 25px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:
+        10px;
+
+}
+
+
+.arcade-mini-stat {
+
+    padding:
+        13px 8px;
+
+    border:
+        1px solid
+        rgba(119,148,221,.20);
+
+    border-radius:
+        15px;
+
+    background:
+        rgba(11,17,34,.65);
+
+    text-align:
+        center;
+
+}
+
+
+.arcade-mini-stat span {
+
+    display:
+        block;
+
+    color:
+        var(--muted);
+
+    font-size:
+        9px;
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        .06em;
+
+}
+
+
+.arcade-mini-stat strong {
+
+    display:
+        block;
+
+    margin-top:
+        5px;
+
+    font-size:
+        20px;
+
+}
+
+
+/* =========================================================
+   LEVEL-UP
+   ========================================================= */
+
+.arcade-level-up {
+
+    position:
+        fixed;
+
+    top:
+        25px;
+
+    left:
+        50%;
+
+    z-index:
+        9999;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    min-width:
+        260px;
+
+    padding:
+        15px 20px;
+
+    border:
+        1px solid
+        rgba(255,209,48,.45);
+
+    border-radius:
+        18px;
+
+    background:
+        rgba(12,18,38,.96);
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.4);
+
+    opacity:
+        0;
+
+    transform:
+        translate(-50%, -25px);
+
+    transition:
+        opacity .3s ease,
+        transform .3s ease;
+
+}
+
+
+.arcade-level-up.show {
+
+    opacity:
+        1;
+
+    transform:
+        translate(-50%, 0);
+
+}
+
+
+.level-up-icon {
+
+    font-size:
+        28px;
+
+}
+
+
+.arcade-level-up strong {
+
+    display:
+        block;
+
+    color:
+        #ffd130;
+
+    font-size:
+        13px;
+
+}
+
+
+.arcade-level-up span {
+
+    display:
+        block;
+
+    margin-top:
+        3px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        11px;
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .arcade-profile {
+
+        width:
+            96vw;
+
+        padding:
+            13px;
+
+        border-radius:
+            17px;
+
+    }
+
+
+    .arcade-level-badge {
+
+        width:
+            50px;
+
+        height:
+            50px;
+
+    }
+
+
+    .arcade-level-badge strong {
+
+        font-size:
+            18px;
+
+    }
+
+
+    .arcade-mini-stats {
+
+        width:
+            96vw;
+
+        gap:
+            6px;
+
+    }
+
+
+    .arcade-mini-stat {
+
+        padding:
+            10px 5px;
+
+    }
+
+
+    .arcade-mini-stat strong {
+
+        font-size:
+            17px;
+
+    }
+
+
+    .arcade-level-up {
+
+        width:
+            calc(100vw - 30px);
+
+        min-width:
+            0;
+
+    }
+
+}
