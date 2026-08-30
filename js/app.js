@@ -2,6 +2,7 @@ import { showScreen } from "./menu.js";
 import { initReactionGame, stopReactionGame } from "./games/reaction.js";
 import { initMemoryGame } from "./games/memory.js";
 import { initSnakeGame, stopSnakeGame } from "./games/snake.js";
+import { initBlockRush, stopBlockRush } from "./games/blockrush.js";
 import { getProfile, getBest, recordGame, resetProfile, getLevel, getLevelProgress, getAchievements, getChallenges } from "./achievements.js";
 
 const screens = {
@@ -9,6 +10,7 @@ const screens = {
   reaction: "reactionScreen",
   memory: "memoryScreen",
   snake: "snakeScreen",
+  blockrush: "blockRushScreen",
   profile: "profileScreen",
   gameOver: "gameOverScreen",
   highscores: "highscoreScreen",
@@ -101,6 +103,7 @@ function finishGame(game, score) {
 function goTo(name) {
   if (name !== "reaction") stopReactionGame();
   if (name !== "snake") stopSnakeGame();
+  if (name !== "blockrush") stopBlockRush();
   showScreen(screens[name]);
 }
 
@@ -158,6 +161,9 @@ document.querySelectorAll(".game-card").forEach(button => {
     } else if (game === "snake") {
       goTo("snake");
       initSnakeGame({ onGameOver: score => finishGame("snake", score) });
+    } else if (game === "blockrush") {
+      goTo("blockrush");
+      initBlockRush({ onGameOver: score => finishGame("blockrush", score) });
     }
   });
 });
@@ -213,3 +219,8 @@ document.querySelector("#resetProfileButton").addEventListener("click", () => {
     updateProfileUI();
   }
 });
+
+document.querySelector("#blockRushMenuButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#blockRushResetButton")?.addEventListener("click", () => initBlockRush({
+  onGameOver: score => finishGame("blockrush", score)
+}));

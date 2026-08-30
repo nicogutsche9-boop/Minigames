@@ -61,3 +61,14 @@ Alle drei Spiele verwenden jetzt ein gemeinsames Profil:
 ## 📱 Snake auf Mobilgeräten
 
 Snake besitzt jetzt ein touchfreundliches Steuerkreuz. Auf Desktop bleibt die Tastatursteuerung mit WASD/Pfeiltasten erhalten.
+
+
+## 🧱 Block Rush
+
+Das vierte Minigame ist Block Rush – ein eigenes Falling-Blocks-Arcade-Spiel mit:
+- 7 Blocktypen
+- Drehen, Bewegen, Soft Drop und Hard Drop
+- Reihen löschen
+- Level und steigende Geschwindigkeit
+- Vorschau des nächsten Steins
+- Desktop- und Touch-Steuerung

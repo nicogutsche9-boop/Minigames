@@ -785,3 +785,129 @@ button { font: inherit; }
     height: 50px;
   }
 }
+
+
+/* ==================== */
+/* BLOCK RUSH            */
+/* ==================== */
+
+.blockrush-layout {
+  width: min(780px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 150px 300px 150px;
+  gap: 20px;
+  align-items: start;
+  justify-content: center;
+}
+
+.blockrush-board-wrap {
+  position: relative;
+  width: 300px;
+  height: 600px;
+  overflow: hidden;
+  border: 2px solid rgba(194, 108, 255, .35);
+  border-radius: 18px;
+  background: #03080a;
+  box-shadow: inset 0 0 50px rgba(194, 108, 255, .05);
+}
+
+#blockRushCanvas {
+  display: block;
+  width: 300px;
+  height: 600px;
+}
+
+.blockrush-side {
+  display: grid;
+  gap: 10px;
+}
+
+.blockrush-side .stat-card {
+  text-align: center;
+}
+
+.blockrush-next {
+  padding: 15px;
+  text-align: center;
+  border: 1px solid rgba(123, 153, 230, .24);
+  border-radius: 15px;
+  background: rgba(12, 18, 38, .8);
+}
+
+.blockrush-next > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+#blockRushNextCanvas {
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin: auto;
+}
+
+.blockrush-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 15px auto 0;
+}
+
+.blockrush-controls button {
+  width: 56px;
+  height: 50px;
+  border: 1px solid rgba(194, 108, 255, .35);
+  border-radius: 11px;
+  background: rgba(16, 12, 30, .95);
+  color: #d9aaff;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.blockrush-controls button:active {
+  transform: scale(.92);
+  background: rgba(194, 108, 255, .16);
+}
+
+@media (min-width: 701px) {
+  .blockrush-controls {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .blockrush-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+  }
+
+  .blockrush-side {
+    width: min(300px, 100%);
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .blockrush-next {
+    display: none;
+  }
+
+  .blockrush-board-wrap,
+  #blockRushCanvas {
+    width: min(300px, 88vw);
+    height: min(600px, 176vw);
+  }
+}
+
+@media (max-width: 420px) {
+  .blockrush-controls {
+    flex-wrap: wrap;
+    max-width: 300px;
+  }
+}

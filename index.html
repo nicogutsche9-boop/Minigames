@@ -32,7 +32,15 @@
         <div class="game-grid">
           <button class="game-card featured" data-game="reaction">
             <div class="card-icon">⚡</div>
-            <h2>REACTION</h2>
+            
+          <button class="game-card" data-game="blockrush">
+            <div class="card-icon purple">🧱</div>
+            <h2>BLOCK RUSH</h2>
+            <p>Staple Blöcke und räume Reihen ab.</p>
+            <span class="play-pill">SPIELEN</span>
+          </button>
+
+          <h2>REACTION</h2>
             <p>Wie schnell kannst du reagieren?</p>
             <span class="play-pill">SPIELEN</span>
           </button>
@@ -46,7 +54,7 @@
 
           <button class="game-card" data-game="snake">
             <div class="card-icon green">🐍</div>
-            <h2>SNAKE</h2>
+            <h2>NEON SERPENT</h2>
             <p>Der Klassiker. Wachse und überlebe.</p>
             <span class="play-pill snake-pill">SPIELEN</span>
           </button>
@@ -91,8 +99,8 @@
       <section id="snakeScreen" class="screen">
         <div class="game-topbar">
           <button id="snakeMenuButton" class="back-button">← <span>Menü</span></button>
-          <h2>🐍 SNAKE</h2>
-          <button id="snakeResetButton" class="icon-button" aria-label="Snake neu starten">↻</button>
+          <h2>🐍 NEON SERPENT</h2>
+          <button id="snakeResetButton" class="icon-button" aria-label="Neon Serpent neu starten">↻</button>
         </div>
 
         <div class="stats snake-stats">
@@ -112,7 +120,7 @@
             <div class="intro-icon">🐍</div>
             <h3>BEREIT?</h3>
             <p>Steuere die Schlange und sammle so viele Äpfel wie möglich!</p>
-            <button id="startSnakeButton" class="primary-button">SPIEL STARTEN</button>
+            <button id="startNeon SerpentButton" class="primary-button">SPIEL STARTEN</button>
           </div>
           <div id="snakeGameOver" class="snake-game-over hidden">
             <h3>GAME OVER</h3>
@@ -121,7 +129,7 @@
           </div>
         </div>
 
-        <div id="snakeControls" class="snake-controls" aria-label="Snake Steuerkreuz">
+        <div id="snakeControls" class="snake-controls" aria-label="Neon Serpent Steuerkreuz">
           <button class="snake-arrow up" data-direction="up" aria-label="Nach oben">▲</button>
           <div class="snake-control-row">
             <button class="snake-arrow" data-direction="left" aria-label="Nach links">◀</button>
@@ -179,6 +187,62 @@
         <div id="memoryStatus" class="memory-status">Finde alle 8 Paare!</div>
       </section>
 
+      
+      <section id="blockRushScreen" class="screen">
+        <div class="game-topbar">
+          <button id="blockRushMenuButton" class="back-button">← <span>Menü</span></button>
+          <h2>🧱 BLOCK RUSH</h2>
+          <button id="blockRushResetButton" class="icon-button" aria-label="Block Rush neu starten">↻</button>
+        </div>
+
+        <div class="blockrush-layout">
+          <div class="blockrush-side">
+            <div class="stat-card">
+              <span>🏆 SCORE</span>
+              <strong id="blockRushScore">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>⚡ LEVEL</span>
+              <strong id="blockRushLevel">1</strong>
+            </div>
+            <div class="stat-card">
+              <span>🧱 LINIEN</span>
+              <strong id="blockRushLines">0</strong>
+            </div>
+          </div>
+
+          <div class="blockrush-board-wrap">
+            <canvas id="blockRushCanvas" width="300" height="600"></canvas>
+            <div id="blockRushOverlay" class="arena-overlay">
+              <div class="intro-icon">🧱</div>
+              <h3>BEREIT?</h3>
+              <p>Baue vollständige Reihen und halte den Stapel unten.</p>
+              <button id="startBlockRushButton" class="primary-button">SPIEL STARTEN</button>
+            </div>
+            <div id="blockRushGameOver" class="snake-game-over hidden">
+              <h3>GAME OVER</h3>
+              <p id="blockRushGameOverText">Score: 0</p>
+              <button id="blockRushRestartButton" class="primary-button">NOCHMAL SPIELEN</button>
+            </div>
+          </div>
+
+          <div class="blockrush-next">
+            <span>NÄCHSTER STEIN</span>
+            <canvas id="blockRushNextCanvas" width="120" height="120"></canvas>
+          </div>
+        </div>
+
+        <div class="blockrush-controls">
+          <button data-br-action="rotate" aria-label="Drehen">↻</button>
+          <button data-br-action="left" aria-label="Links">◀</button>
+          <button data-br-action="down" aria-label="Schneller fallen">▼</button>
+          <button data-br-action="right" aria-label="Rechts">▶</button>
+          <button data-br-action="drop" aria-label="Sofort fallen">⤓</button>
+        </div>
+
+        <p class="snake-help">Tastatur: ← → bewegen · ↑ drehen · ↓ schneller · Leertaste = Hard Drop</p>
+      </section>
+
       <section id="gameOverScreen" class="screen game-over">
         <div class="confetti" aria-hidden="true">✦　◆　•　★　◇　✦　•　◆　★</div>
         <div class="trophy">🏆</div>
@@ -198,7 +262,7 @@
         <div class="highscore-list">
           <div class="highscore-row"><span>⚡ Reaction</span><strong id="reactionBest">0</strong></div>
           <div class="highscore-row"><span>🧠 Memory</span><strong id="memoryBest">0</strong></div>
-          <div class="highscore-row"><span>🐍 Snake</span><strong id="snakeBest">0</strong></div>
+          <div class="highscore-row"><span>🐍 Neon Serpent</span><strong id="snakeBest">0</strong></div>
         </div>
         <div class="highscore-panel compact">
           <p>⚡ Reaction</p>
@@ -221,6 +285,6 @@
     </main>
   </div>
 
-  <script type="module" src="js/app.js?v=7"></script>
+  <script type="module" src="js/app.js?v=8"></script>
 </body>
 </html>

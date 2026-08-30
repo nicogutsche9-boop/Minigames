@@ -2,7 +2,7 @@ const canvas = document.querySelector("#snakeCanvas");
 const ctx = canvas.getContext("2d");
 
 const GRID_SIZE = 20;
-const INITIAL_SNAKE = [
+const INITIAL_NEON SERPENT = [
   { x: 9, y: 10 },
   { x: 8, y: 10 },
   { x: 7, y: 10 }
@@ -25,7 +25,7 @@ const gameOverPanel = document.querySelector("#snakeGameOver");
 const gameOverText = document.querySelector("#snakeGameOverText");
 
 function resetState() {
-  snake = INITIAL_SNAKE.map(part => ({ ...part }));
+  snake = INITIAL_NEON SERPENT.map(part => ({ ...part }));
   direction = { x: 1, y: 0 };
   nextDirection = { x: 1, y: 0 };
   score = 0;
@@ -189,7 +189,7 @@ function draw(gameEnded = false) {
   ctx.fill();
   ctx.shadowBlur = 0;
 
-  // Snake
+  // Neon Serpent
   snake.forEach((part, index) => {
     const padding = index === 0 ? cell * 0.09 : cell * 0.13;
     const x = part.x * cell + padding;
@@ -220,7 +220,7 @@ function roundRect(context, x, y, width, height, radius) {
   context.closePath();
 }
 
-export function initSnakeGame(options = {}) {
+export function initNeon SerpentGame(options = {}) {
   onGameOver = options.onGameOver || onGameOver;
 
   if (!initialized) {
@@ -228,7 +228,7 @@ export function initSnakeGame(options = {}) {
     initialized = true;
   }
 
-  document.querySelector("#startSnakeButton").onclick = startGame;
+  document.querySelector("#startNeon SerpentButton").onclick = startGame;
   document.querySelector("#snakeRestartButton").onclick = startGame;
 
   document.querySelectorAll(".snake-arrow").forEach(button => {
@@ -250,7 +250,7 @@ export function initSnakeGame(options = {}) {
   gameOverPanel.classList.add("hidden");
 }
 
-export function stopSnakeGame() {
+export function stopNeon SerpentGame() {
   running = false;
   stopLoop();
 }
