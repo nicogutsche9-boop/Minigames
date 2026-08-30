@@ -1,3 +1,4 @@
+import { initArcadeProfile } from "./arcade/profile.js";
 import { showScreen } from "./menu.js";
 import { initReactionGame, stopReactionGame } from "./games/reaction.js";
 import { initMemoryGame } from "./games/memory.js";
