@@ -32,15 +32,7 @@
         <div class="game-grid">
           <button class="game-card featured" data-game="reaction">
             <div class="card-icon">⚡</div>
-            
-          <button class="game-card" data-game="blockrush">
-            <div class="card-icon purple">🧱</div>
-            <h2>BLOCK RUSH</h2>
-            <p>Staple Blöcke und räume Reihen ab.</p>
-            <span class="play-pill">SPIELEN</span>
-          </button>
-
-          <h2>REACTION</h2>
+            <h2>REACTION</h2>
             <p>Wie schnell kannst du reagieren?</p>
             <span class="play-pill">SPIELEN</span>
           </button>
@@ -57,6 +49,13 @@
             <h2>NEON SERPENT</h2>
             <p>Der Klassiker. Wachse und überlebe.</p>
             <span class="play-pill snake-pill">SPIELEN</span>
+          </button>
+
+          <button class="game-card" data-game="blockrush">
+            <div class="card-icon purple">🧱</div>
+            <h2>BLOCK RUSH</h2>
+            <p>Staple Blöcke und räume Reihen ab.</p>
+            <span class="play-pill">SPIELEN</span>
           </button>
         </div>
 
@@ -120,7 +119,7 @@
             <div class="intro-icon">🐍</div>
             <h3>BEREIT?</h3>
             <p>Steuere die Schlange und sammle so viele Äpfel wie möglich!</p>
-            <button id="startNeon SerpentButton" class="primary-button">SPIEL STARTEN</button>
+            <button id="startSnakeButton" class="primary-button">SPIEL STARTEN</button>
           </div>
           <div id="snakeGameOver" class="snake-game-over hidden">
             <h3>GAME OVER</h3>
@@ -263,6 +262,7 @@
           <div class="highscore-row"><span>⚡ Reaction</span><strong id="reactionBest">0</strong></div>
           <div class="highscore-row"><span>🧠 Memory</span><strong id="memoryBest">0</strong></div>
           <div class="highscore-row"><span>🐍 Neon Serpent</span><strong id="snakeBest">0</strong></div>
+          <div class="highscore-row"><span>🧱 Block Rush</span><strong id="blockrushBest">0</strong></div>
         </div>
         <div class="highscore-panel compact">
           <p>⚡ Reaction</p>
@@ -285,6 +285,6 @@
     </main>
   </div>
 
-  <script type="module" src="js/app.js?v=8"></script>
+  <script type="module" src="js/app.js?v=10"></script>
 </body>
 </html>

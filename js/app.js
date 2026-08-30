@@ -35,8 +35,6 @@ function updateProfileUI() {
   if (levelEl) levelEl.textContent = getLevel(profile.xp);
   if (xpEl) xpEl.textContent = `${getLevelProgress(profile.xp)}/100 XP`;
   if (xpBar) xpBar.style.width = `${getLevelProgress(profile.xp)}%`;
-
-  updateProfileUI();
 }
 
 function renderProfile() {
@@ -121,32 +119,9 @@ function updateHighscoreUI() {
   if (reactionBest) reactionBest.textContent = getBest("reaction");
   if (memoryBest) memoryBest.textContent = getBest("memory");
   if (snakeBest) snakeBest.textContent = getBest("snake");
+  const blockrushBest = document.querySelector("#blockrushBest");
+  if (blockrushBest) blockrushBest.textContent = getBest("blockrush");
 }
-
-document.querySelectorAll("[data-game]").forEach(button => {
-  button.addEventListener("click", () => {
-    if (button.dataset.game === "reaction") {
-      goTo("reaction");
-      initReactionGame({
-        onGameOver: score => finishGame("reaction", score)
-      });
-    }
-
-    if (button.dataset.game === "memory") {
-      goTo("memory");
-      initMemoryGame({
-        onComplete: score => finishGame("memory", score)
-      });
-    }
-
-    if (button.dataset.game === "snake") {
-      goTo("snake");
-      initSnakeGame({
-        onGameOver: score => finishGame("snake", score)
-      });
-    }
-  });
-});
 
 document.querySelectorAll(".game-card").forEach(button => {
   button.addEventListener("click", () => {
@@ -167,27 +142,27 @@ document.querySelectorAll(".game-card").forEach(button => {
     }
   });
 });
-document.querySelector("#reactionMenuButton").addEventListener("click", () => goTo("menu"));
-document.querySelector("#memoryMenuButton").addEventListener("click", () => goTo("menu"));
-document.querySelector("#memoryResetButton").addEventListener("click", () => initMemoryGame());
+document.querySelector("#reactionMenuButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#memoryMenuButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#memoryResetButton")?.addEventListener("click", () => initMemoryGame());
 
-document.querySelector("#snakeMenuButton").addEventListener("click", () => goTo("menu"));
-document.querySelector("#snakeResetButton").addEventListener("click", () => initSnakeGame());
-document.querySelector("#gameOverMenuButton").addEventListener("click", () => goTo("menu"));
-document.querySelector("#playAgainButton").addEventListener("click", () => {
+document.querySelector("#snakeMenuButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#snakeResetButton")?.addEventListener("click", () => initSnakeGame());
+document.querySelector("#gameOverMenuButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#playAgainButton")?.addEventListener("click", () => {
   goTo("reaction");
   initReactionGame({
     onGameOver: score => finishGame("reaction", score)
   });
 });
-document.querySelector("#highscoreButton").addEventListener("click", () => {
+document.querySelector("#highscoreButton")?.addEventListener("click", () => {
   updateHighscoreUI();
   goTo("highscores");
 });
-document.querySelector("#highscoreBackButton").addEventListener("click", () => goTo("menu"));
-document.querySelector("#settingsButton").addEventListener("click", () => goTo("settings"));
-document.querySelector("#settingsBackButton").addEventListener("click", () => goTo("menu"));
-document.querySelector("#myGamesButton").addEventListener("click", () => {
+document.querySelector("#highscoreBackButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#settingsButton")?.addEventListener("click", () => goTo("settings"));
+document.querySelector("#settingsBackButton")?.addEventListener("click", () => goTo("menu"));
+document.querySelector("#myGamesButton")?.addEventListener("click", () => {
   alert("Deine Spielesammlung wird mit den nächsten Minigames erweitert.");
 });
 
@@ -196,7 +171,7 @@ soundToggle.addEventListener("change", () => {
   localStorage.setItem("miniArcadeSound", String(soundEnabled));
 });
 
-document.querySelector("#resetScoreButton").addEventListener("click", () => {
+document.querySelector("#resetScoreButton")?.addEventListener("click", () => {
   resetProfile();
   updateProfileUI();
   alert("Profil, Coins, XP und Highscores wurden zurückgesetzt.");
@@ -205,14 +180,14 @@ document.querySelector("#resetScoreButton").addEventListener("click", () => {
 updateHighscoreUI();
 
 
-document.querySelector("#profileButton").addEventListener("click", () => {
+document.querySelector("#profileButton")?.addEventListener("click", () => {
   renderProfile();
   goTo("profile");
 });
 
-document.querySelector("#profileBackButton").addEventListener("click", () => goTo("menu"));
+document.querySelector("#profileBackButton")?.addEventListener("click", () => goTo("menu"));
 
-document.querySelector("#resetProfileButton").addEventListener("click", () => {
+document.querySelector("#resetProfileButton")?.addEventListener("click", () => {
   if (confirm("Wirklich Profil, XP, Coins und Highscores zurücksetzen?")) {
     resetProfile();
     renderProfile();
