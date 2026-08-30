@@ -1,77 +1,13 @@
 const ACHIEVEMENTS = [
-  {
-    id: "first_game",
-    icon: "🎮",
-    title: "Erster Schritt",
-    desc: "Spiele dein erstes Minigame.",
-    reward: 50
-  },
-
-  {
-    id: "reaction_100",
-    icon: "⚡",
-    title: "Schnelle Finger",
-    desc: "Erreiche 100 Punkte in Reaction.",
-    reward: 75
-  },
-
-  {
-    id: "memory_800",
-    icon: "🧠",
-    title: "Gedächtnismeister",
-    desc: "Erreiche 800 Punkte in Memory.",
-    reward: 100
-  },
-
-  {
-    id: "snake_100",
-    icon: "🐍",
-    title: "Serpent Hunter",
-    desc: "Erreiche 100 Punkte in Neon Serpent.",
-    reward: 100
-  },
-
-  {
-    id: "blockrush_500",
-    icon: "🧱",
-    title: "Block Builder",
-    desc: "Erreiche 500 Punkte in Block Rush.",
-    reward: 100
-  },
-
-  {
-    id: "dropduel_win",
-    icon: "🔴",
-    title: "Duel-Meister",
-    desc: "Gewinne eine Runde Drop Duel.",
-    reward: 100
-  },
-
-  {
-    id: "dropduel_5wins",
-    icon: "🏅",
-    title: "Duel-Champion",
-    desc: "Gewinne 5 Runden Drop Duel.",
-    reward: 200
-  },
-
-  {
-    id: "collector",
-    icon: "🪙",
-    title: "Sammler",
-    desc: "Sammle 2.000 Coins.",
-    reward: 150
-  },
-
-  {
-    id: "level_5",
-    icon: "🏆",
-    title: "Aufsteiger",
-    desc: "Erreiche Level 5.",
-    reward: 200
-  }
+  { id: "first_game", icon: "🎮", title: "Erster Schritt", desc: "Spiele dein erstes Minigame.", reward: 50 },
+  { id: "reaction_100", icon: "⚡", title: "Schnelle Finger", desc: "Erreiche 100 Punkte in Reaction.", reward: 75 },
+  { id: "memory_800", icon: "🧠", title: "Gedächtnismeister", desc: "Erreiche 800 Punkte in Memory.", reward: 100 },
+  { id: "snake_100", icon: "🐍", title: "Serpent Hunter", desc: "Erreiche 100 Punkte in Neon Serpent.", reward: 100 },
+  { id: "blockrush_500", icon: "🧱", title: "Block Builder", desc: "Erreiche 500 Punkte in Block Rush.", reward: 100 },
+  { id: "dropduel_100", icon: "🔴", title: "Vier gewinnt", desc: "Gewinne eine Runde Drop Duel.", reward: 100 },
+  { id: "collector", icon: "🪙", title: "Sammler", desc: "Sammle 2.000 Coins.", reward: 150 },
+  { id: "level_5", icon: "🏆", title: "Aufsteiger", desc: "Erreiche Level 5.", reward: 200 }
 ];
-
 
 const CHALLENGES = [
   {
@@ -319,11 +255,8 @@ function unlock(
 }
 
 
-function updateAchievements(
-  profile,
-  game,
-  score
-) {
+function updateAchievements(profile,game,score) 
+{
 
   const unlocked = [];
 
@@ -434,7 +367,11 @@ function updateAchievements(
 
   }
 
-
+if (game === "dropduel" && score >= 100) {
+  const a = unlock(profile, "dropduel_100");
+  if (a) unlocked.push(a);
+}
+  
   /*
    * Drop Duel:
    * Eine gewonnene Runde
