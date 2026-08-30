@@ -1101,7 +1101,10 @@ function finishGame(winner) {
     if (
         winner === HUMAN
     ) {
-
+registerGameResult(
+    "Drop Duel",
+    "win"
+);
         playerWins++;
 
 
@@ -1122,7 +1125,10 @@ function finishGame(winner) {
     else if (
         winner === CPU
     ) {
-
+registerGameResult(
+    "Drop Duel",
+    "loss"
+);
         cpuWins++;
 
 
@@ -1141,7 +1147,10 @@ function finishGame(winner) {
     }
 
     else {
-
+registerGameResult(
+    "Drop Duel",
+    "draw"
+);
         resultTitle.textContent =
             "🤝 UNENTSCHIEDEN";
 
@@ -1320,10 +1329,10 @@ function playColumn(column) {
    NEUES SPIEL
    ========================================================= */
 
-function startGame() {
-
+function startGame() { 
+    registerGameStart("Drop Duel");
     board =
-        createBoard();
+    createBoard();
 
 
     running = true;
