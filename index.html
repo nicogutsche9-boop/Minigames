@@ -154,6 +154,21 @@
         <button id="resetProfileButton" class="danger-button">Profil zurücksetzen</button>
       </section>
 
+      
+      <section id="memoryScreen" class="screen">
+        <div class="game-topbar">
+          <button id="memoryMenuButton" class="back-button">← <span>Menü</span></button>
+          <h2>🧠 MEMORY</h2>
+          <button id="memoryResetButton" class="icon-button" aria-label="Memory neu starten">↻</button>
+        </div>
+        <div class="stats memory-stats">
+          <div class="stat-card"><span>🏆 PAARE</span><strong><span id="memoryPairs">0</span>/8</strong></div>
+          <div class="stat-card time"><span>↻ ZÜGE</span><strong id="memoryMoves">0</strong></div>
+        </div>
+        <div id="memoryBoard" class="memory-board"></div>
+        <div id="memoryStatus" class="memory-status">Finde alle 8 Paare!</div>
+      </section>
+
       <section id="gameOverScreen" class="screen game-over">
         <div class="confetti" aria-hidden="true">✦　◆　•　★　◇　✦　•　◆　★</div>
         <div class="trophy">🏆</div>
@@ -196,6 +211,6 @@
     </main>
   </div>
 
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=6"></script>
 </body>
 </html>

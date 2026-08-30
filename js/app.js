@@ -145,6 +145,22 @@ document.querySelectorAll("[data-game]").forEach(button => {
   });
 });
 
+document.querySelectorAll(".game-card").forEach(button => {
+  button.addEventListener("click", () => {
+    const game = button.dataset.game;
+
+    if (game === "reaction") {
+      goTo("reaction");
+      initReactionGame({ onGameOver: score => finishGame("reaction", score) });
+    } else if (game === "memory") {
+      goTo("memory");
+      initMemoryGame({ onComplete: score => finishGame("memory", score) });
+    } else if (game === "snake") {
+      goTo("snake");
+      initSnakeGame({ onGameOver: score => finishGame("snake", score) });
+    }
+  });
+});
 document.querySelector("#reactionMenuButton").addEventListener("click", () => goTo("menu"));
 document.querySelector("#memoryMenuButton").addEventListener("click", () => goTo("menu"));
 document.querySelector("#memoryResetButton").addEventListener("click", () => initMemoryGame());
