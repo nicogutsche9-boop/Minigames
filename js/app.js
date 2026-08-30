@@ -82,7 +82,7 @@ function renderProfile() {
     `;
   }).join("");
 }
-
+window.finishMiniArcadeGame = finishGame;
 function finishGame(game, score) {
   const result = recordGame(game, score);
 
