@@ -1,3 +1,8 @@
+import {
+    registerGameStart,
+    registerGameResult
+} from "../arcade/profile.js";
+
 const ROWS = 6;
 const COLS = 7;
 
