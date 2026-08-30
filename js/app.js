@@ -1,4 +1,3 @@
-import { initArcadeProfile } from "./arcade/profile.js";
 import { showScreen } from "./menu.js";
 import { initReactionGame, stopReactionGame } from "./games/reaction.js";
 import { initMemoryGame } from "./games/memory.js";
@@ -148,8 +147,11 @@ document.querySelectorAll(".game-card").forEach(button => {
     }
     else if (game === "dropduel") {
     goTo("dropduel");
-    initDropDuel();
 
+    initDropDuel({
+        onGameOver: score =>
+            finishGame("dropduel", score)
+    });
 }
   });
 });
