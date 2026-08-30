@@ -18,21 +18,22 @@
     <main>
       <section id="menuScreen" class="screen active">
 
-  <!-- =========================
-       TOP PROFILE BAR
-       ========================= -->
+  <!-- =========================================
+       RETRO ARCADE TOP BAR
+  ========================================== -->
 
   <div class="arcade-top">
 
     <div class="arcade-wallet">
-      🪙
+      <span class="arcade-coin-icon">🪙</span>
       <strong id="coinCount">1.250</strong>
     </div>
 
     <div class="arcade-level">
 
       <div class="arcade-level-title">
-        ⭐ LEVEL <strong id="levelValue">1</strong>
+        <span>⭐</span>
+        <strong>LEVEL <span id="levelValue">1</span></strong>
       </div>
 
       <div class="arcade-xp-row">
@@ -40,29 +41,41 @@
           <span id="xpBar"></span>
         </div>
 
-        <span id="xpValue">
-          0 / 100 XP
-        </span>
+        <span id="xpValue">0 / 100 XP</span>
       </div>
 
     </div>
 
+    <div class="arcade-menu-buttons">
 
-    <div class="arcade-top-actions">
+      <button
+        id="highscoreButton"
+        class="arcade-menu-button"
+        type="button">
 
-      <button id="highscoreButton">
-        🏆
-        <span>BESTENLISTE</span>
+        <span>🏆</span>
+        <small>BESTENLISTE</small>
+
       </button>
 
-      <button id="myGamesButton">
-        👤
-        <span>PROFIL</span>
+      <button
+        id="myGamesButton"
+        class="arcade-menu-button"
+        type="button">
+
+        <span>👤</span>
+        <small>PROFIL</small>
+
       </button>
 
-      <button id="settingsButton">
-        ⚙
-        <span>EINSTELLUNGEN</span>
+      <button
+        type="button"
+        class="arcade-menu-button"
+        onclick="document.querySelector('#settingsButton')?.click()">
+
+        <span>⚙️</span>
+        <small>EINSTELLUNGEN</small>
+
       </button>
 
     </div>
@@ -70,43 +83,49 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =========================================
        HERO
-       ========================= -->
+  ========================================== -->
 
-  <section class="arcade-hero">
+  <div class="arcade-hero">
 
-    <div class="arcade-logo">
-      <span>MINI</span>
-      <strong>ARCADE</strong>
-    </div>
+    <div class="arcade-hero-decor left">✦</div>
+    <div class="arcade-hero-decor right">✦</div>
+
+    <h1>
+      MINI
+      <span>ARCADE</span>
+    </h1>
 
     <p>
       WILLKOMMEN ZURÜCK, SPIELER!
     </p>
 
     <button
+      id="mainPlayButton"
       class="arcade-main-play"
-      id="mainPlayButton">
+      type="button">
 
-      ▶ &nbsp; SPIELEN
+      <span class="play-arrow">▶</span>
+      SPIELEN
 
     </button>
 
     <button
-      class="arcade-random-play"
-      id="randomGameButton">
+      id="randomGameButton"
+      class="arcade-random-button"
+      type="button">
 
       🎲 &nbsp; ZUFÄLLIGES SPIEL
 
     </button>
 
-  </section>
+  </div>
 
 
-  <!-- =========================
-       DASHBOARD
-       ========================= -->
+  <!-- =========================================
+       WEITERSPIELEN + CHALLENGES
+  ========================================== -->
 
   <div class="arcade-dashboard">
 
@@ -115,7 +134,7 @@
 
     <section class="arcade-panel continue-panel">
 
-      <h3>WEITERSPIELEN</h3>
+      <h2>WEITERSPIELEN</h2>
 
       <div class="continue-game">
 
@@ -125,19 +144,22 @@
 
         <div class="continue-info">
 
-          <strong id="continueGameName">
+          <strong id="continueGameTitle">
             NEON SERPENT
           </strong>
 
-          <span>
-            BESTER SCORE:
-            <b id="continueGameScore">0</b>
+          <span id="continueGameScore">
+            BESTER SCORE: 0
           </span>
 
         </div>
 
-        <button id="continueGameButton">
+        <button
+          id="continueGameButton"
+          type="button">
+
           FORTSETZEN
+
         </button>
 
       </div>
@@ -145,25 +167,121 @@
     </section>
 
 
-    <!-- DAILY CHALLENGES -->
+    <!-- TÄGLICHE CHALLENGES -->
 
     <section class="arcade-panel challenges-panel">
 
-      <div class="panel-heading">
+      <div class="challenge-header">
 
-        <h3>
-          TÄGLICHE CHALLENGES
-        </h3>
+        <h2>TÄGLICHE CHALLENGES</h2>
 
-        <span id="challengeCountdown">
-          ◷ 24:00:00
+        <span class="challenge-time">
+          ◷ <span id="challengeTimer">00:00:00</span>
         </span>
 
       </div>
 
-      <div id="homeChallenges">
 
-        <!-- wird von app.js / profile.js gefüllt -->
+      <div class="challenge-list">
+
+
+        <div class="challenge-row">
+
+          <span class="challenge-icon">
+            ⭐
+          </span>
+
+          <div class="challenge-info">
+
+            <strong>
+              Arcade-Fan
+            </strong>
+
+            <small>
+              Spiele heute 3 Runden.
+            </small>
+
+          </div>
+
+          <strong
+            id="challengePlay3Progress"
+            class="challenge-progress">
+
+            0 / 3
+
+          </strong>
+
+          <span class="challenge-reward">
+            100 🪙
+          </span>
+
+        </div>
+
+
+        <div class="challenge-row">
+
+          <span class="challenge-icon">
+            ⚔️
+          </span>
+
+          <div class="challenge-info">
+
+            <strong>
+              Punktejäger
+            </strong>
+
+            <small>
+              Erziele heute insgesamt 250 Punkte.
+            </small>
+
+          </div>
+
+          <strong
+            id="challengeScoreProgress"
+            class="challenge-progress">
+
+            0 / 250
+
+          </strong>
+
+          <span class="challenge-reward">
+            125 🪙
+          </span>
+
+        </div>
+
+
+        <div class="challenge-row">
+
+          <span class="challenge-icon">
+            🃏
+          </span>
+
+          <div class="challenge-info">
+
+            <strong>
+              Kartenkönig
+            </strong>
+
+            <small>
+              Spiele heute Memory.
+            </small>
+
+          </div>
+
+          <strong
+            id="challengeMemoryProgress"
+            class="challenge-progress">
+
+            0 / 1
+
+          </strong>
+
+          <span class="challenge-reward">
+            75 🪙
+          </span>
+
+        </div>
 
       </div>
 
@@ -172,114 +290,144 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =========================================
        SPIELE
-       ========================= -->
+  ========================================== -->
 
-  <section class="arcade-games">
+  <section class="arcade-games-section">
 
-    <h3>SPIELE</h3>
+    <h2>SPIELE</h2>
 
     <div class="arcade-game-grid">
 
 
+      <!-- REACTION -->
+
       <button
         class="arcade-game-card reaction-card"
-        data-game="reaction">
+        data-game="reaction"
+        type="button">
 
         <div class="arcade-game-icon">
           ⚡
         </div>
 
-        <strong>REACTION</strong>
+        <h3>
+          REACTION
+        </h3>
 
-        <span>
-          BEST:
-          <b id="homeReactionBest">0</b>
+        <span class="arcade-best">
+          BEST: <span data-best-game="reaction">0</span>
         </span>
 
-        <em>SPIELEN</em>
+        <span class="arcade-game-play">
+          SPIELEN
+        </span>
 
       </button>
 
 
+      <!-- MEMORY -->
+
       <button
         class="arcade-game-card memory-card"
-        data-game="memory">
+        data-game="memory"
+        type="button">
 
         <div class="arcade-game-icon">
           🧠
         </div>
 
-        <strong>MEMORY</strong>
+        <h3>
+          MEMORY
+        </h3>
 
-        <span>
-          BEST:
-          <b id="homeMemoryBest">0</b>
+        <span class="arcade-best">
+          BEST: <span data-best-game="memory">0</span>
         </span>
 
-        <em>SPIELEN</em>
+        <span class="arcade-game-play">
+          SPIELEN
+        </span>
 
       </button>
 
 
+      <!-- NEON SERPENT -->
+
       <button
         class="arcade-game-card snake-card"
-        data-game="snake">
+        data-game="snake"
+        type="button">
 
         <div class="arcade-game-icon">
           🐍
         </div>
 
-        <strong>NEON SERPENT</strong>
+        <h3>
+          NEON<br>SERPENT
+        </h3>
 
-        <span>
-          BEST:
-          <b id="homeSnakeBest">0</b>
+        <span class="arcade-best">
+          BEST: <span data-best-game="snake">0</span>
         </span>
 
-        <em>SPIELEN</em>
+        <span class="arcade-game-play">
+          SPIELEN
+        </span>
 
       </button>
 
 
+      <!-- BLOCK RUSH -->
+
       <button
         class="arcade-game-card blockrush-card"
-        data-game="blockrush">
+        data-game="blockrush"
+        type="button">
 
         <div class="arcade-game-icon">
           🧱
         </div>
 
-        <strong>BLOCK RUSH</strong>
+        <h3>
+          BLOCK RUSH
+        </h3>
 
-        <span>
-          BEST:
-          <b id="homeBlockrushBest">0</b>
+        <span class="arcade-best">
+          BEST: <span data-best-game="blockrush">0</span>
         </span>
 
-        <em>SPIELEN</em>
+        <span class="arcade-game-play">
+          SPIELEN
+        </span>
 
       </button>
 
 
+      <!-- DROP DUEL -->
+
       <button
         class="arcade-game-card dropduel-card"
-        data-game="dropduel">
+        data-game="dropduel"
+        type="button">
 
         <div class="arcade-game-icon">
           🔴
+          🟡
         </div>
 
-        <strong>DROP DUEL</strong>
+        <h3>
+          DROP DUEL
+        </h3>
 
-        <span>
-          BEST:
-          <b id="homeDropDuelWins">0</b>
-          SIEGE
+        <span class="arcade-best">
+          SIEGE: <span id="dropDuelBest">0</span>
         </span>
 
-        <em>SPIELEN</em>
+        <span class="arcade-game-play">
+          SPIELEN
+        </span>
 
       </button>
 
@@ -288,40 +436,46 @@
   </section>
 
 
-  <!-- =========================
-       LOWER DASHBOARD
-       ========================= -->
+  <!-- =========================================
+       UNTERER INFO-BEREICH
+  ========================================== -->
 
-  <div class="arcade-bottom-grid">
-
-
-    <section class="arcade-panel">
-
-      <h3>🏆 BESTER SCORE</h3>
-
-      <div id="homeHighscoreList"></div>
-
-    </section>
+  <div class="arcade-bottom-dashboard">
 
 
-    <section class="arcade-panel">
+    <!-- BESTER SCORE -->
 
-      <h3>🏅 NEUESTE ERRUNGENSCHAFT</h3>
+    <section class="arcade-bottom-panel">
 
-      <div id="homeAchievement">
+      <h2>
+        🏆 BESTER SCORE
+      </h2>
 
-        <div class="achievement-icon">
-          🏆
+      <div class="arcade-highscore-mini">
+
+        <div>
+          <span>1. Reaction</span>
+          <strong id="menuReactionBest">0</strong>
         </div>
 
         <div>
-          <strong>
-            NOCH KEINE ERRUNGENSCHAFT
-          </strong>
+          <span>2. Memory</span>
+          <strong id="menuMemoryBest">0</strong>
+        </div>
 
-          <span>
-            Spiele ein Minigame!
-          </span>
+        <div>
+          <span>3. Neon Serpent</span>
+          <strong id="menuSnakeBest">0</strong>
+        </div>
+
+        <div>
+          <span>4. Block Rush</span>
+          <strong id="menuBlockRushBest">0</strong>
+        </div>
+
+        <div>
+          <span>5. Drop Duel</span>
+          <strong id="menuDropDuelBest">0</strong>
         </div>
 
       </div>
@@ -329,44 +483,97 @@
     </section>
 
 
-    <section class="arcade-panel">
+    <!-- ERFOLG -->
 
-      <h3>DEIN STATUS</h3>
+    <section class="arcade-bottom-panel achievement-preview">
 
-      <div class="home-status">
+      <h2>
+        NEUESTE ERRUNGENSCHAFT
+      </h2>
 
-        <div class="home-avatar">
-          🎮
+      <div class="achievement-preview-content">
+
+        <div
+          id="latestAchievementIcon"
+          class="achievement-big-icon">
+
+          ⭐
+
         </div>
 
         <div>
 
-          <strong>
-            LEVEL <span id="homeLevel">1</span>
+          <strong id="latestAchievementTitle">
+            NOCH KEINE
           </strong>
 
-          <div class="home-status-xp">
-            <span id="homeXPBar"></span>
+          <p id="latestAchievementText">
+            Spiele deine erste Runde!
+          </p>
+
+          <span id="latestAchievementReward">
+            +0 🪙
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- STATUS -->
+
+    <section class="arcade-bottom-panel status-preview">
+
+      <h2>
+        DEIN STATUS
+      </h2>
+
+      <div class="status-content">
+
+        <div class="status-avatar">
+          🎮
+        </div>
+
+        <div class="status-info">
+
+          <strong>
+            LEVEL <span id="statusLevel">1</span>
+          </strong>
+
+          <div class="status-xp">
+
+            <div>
+              <span id="statusXp">
+                0 / 100 XP
+              </span>
+            </div>
+
+            <div class="status-xp-track">
+              <span id="statusXpBar"></span>
+            </div>
+
           </div>
 
-          <small id="homeXP">
-            0 / 100 XP
-          </small>
+          <div class="status-numbers">
 
-          <p>
-            XP GESAMT:
-            <b id="homeTotalXP">0</b>
-          </p>
+            <span>
+              XP GESAMT
+              <strong id="statusTotalXp">0</strong>
+            </span>
 
-          <p>
-            COINS:
-            <b id="homeCoins">1.250</b>
-          </p>
+            <span>
+              COINS
+              <strong id="statusCoins">1.250</strong>
+            </span>
 
-          <p>
-            SPIELE GESPIELT:
-            <b id="arcadeTotalGames">0</b>
-          </p>
+            <span>
+              GESPIELT
+              <strong id="statusGames">0</strong>
+            </span>
+
+          </div>
 
         </div>
 
@@ -377,15 +584,17 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =========================================
        FOOTER
-       ========================= -->
+  ========================================== -->
 
   <div class="arcade-footer">
-    ✦ ✦ &nbsp;
-    ❤️ VIEL SPASS IN DEINER MINI ARCADE!
-    &nbsp; 🎮
-    &nbsp; ✦ ✦
+
+    ✦
+    <span>VIEL SPASS IN DEINER MINI ARCADE!</span>
+    🎮
+    ✦
+
   </div>
 
 </section>
