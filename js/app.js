@@ -11,7 +11,9 @@
 import {
     getArcadeProfile,
     getLevelData,
-    updateArcadeProfileUI
+    updateArcadeProfileUI,
+    registerGameStart,
+    registerGameResult
 } from "./arcade/profile.js";
 
 
@@ -94,7 +96,6 @@ const xpBar =
         "#xpBar"
     );
 
-
 const arcadeLevel =
     document.querySelector(
         "#arcadeLevel"
@@ -130,26 +131,45 @@ const arcadeBestScore =
    SCREEN WECHSELN
    ========================================================= */
 
-function showScreen(
-    screenId
-) {
+function showScreen(screenId) {
 
-    screens.forEach(
-        screen => {
+    screens.forEach(screen => {
 
-            screen.classList.toggle(
-                "active",
-                screen.id === screenId
-            );
+        screen.classList.toggle(
+            "active",
+            screen.id === screenId
+        );
 
-        }
-    );
+    });
 
 
-    currentScreen =
-        screenId;
+    currentScreen = screenId;
 
 }
+
+
+/* =========================================================
+   SPIELNAMEN
+   ========================================================= */
+
+const GAME_NAMES = {
+
+    reaction:
+        "Reaction",
+
+    memory:
+        "Memory",
+
+    snake:
+        "Neon Serpent",
+
+    blockrush:
+        "Block Rush",
+
+    dropduel:
+        "Drop Duel"
+
+};
 
 
 /* =========================================================
@@ -163,49 +183,81 @@ function stopCurrentGame() {
     }
 
 
-    switch (
-        currentGame
-    ) {
+    switch (currentGame) {
 
         case "reaction":
 
-            stopReactionGame?.();
+            if (
+                typeof stopReactionGame ===
+                "function"
+            ) {
+
+                stopReactionGame();
+
+            }
 
             break;
 
 
         case "memory":
 
-            stopMemory?.();
+            if (
+                typeof stopMemory ===
+                "function"
+            ) {
+
+                stopMemory();
+
+            }
 
             break;
 
 
         case "snake":
 
-            stopSnakeGame?.();
+            if (
+                typeof stopSnakeGame ===
+                "function"
+            ) {
+
+                stopSnakeGame();
+
+            }
 
             break;
 
 
         case "blockrush":
 
-            stopBlockRush?.();
+            if (
+                typeof stopBlockRush ===
+                "function"
+            ) {
+
+                stopBlockRush();
+
+            }
 
             break;
 
 
         case "dropduel":
 
-            stopDropDuel?.();
+            if (
+                typeof stopDropDuel ===
+                "function"
+            ) {
+
+                stopDropDuel();
+
+            }
 
             break;
 
     }
 
 
-    currentGame =
-        null;
+    currentGame = null;
 
 }
 
@@ -223,9 +275,10 @@ function updateProfileUI() {
         getLevelData();
 
 
-    /* -----------------------------------------
-       PROFIL-SYSTEM SELBST AKTUALISIEREN
-       ----------------------------------------- */
+    /*
+       Zentrales Profil-System
+       aktualisieren.
+    */
 
     updateArcadeProfileUI();
 
@@ -235,13 +288,6 @@ function updateProfileUI() {
        ----------------------------------------- */
 
     if (coinCount) {
-
-        /*
-           Dein aktuelles Profil-System
-           besitzt momentan keine Coins.
-           Deshalb nur anzeigen, wenn
-           ein solcher Wert vorhanden ist.
-        */
 
         coinCount.textContent =
             Number(
@@ -298,13 +344,15 @@ function updateProfileUI() {
        ----------------------------------------- */
 
     const percentage =
-        Math.min(
-            100,
-            (
-                levelData.currentXP /
-                levelData.requiredXP
-            ) * 100
-        );
+        levelData.requiredXP > 0
+            ? Math.min(
+                100,
+                (
+                    levelData.currentXP /
+                    levelData.requiredXP
+                ) * 100
+            )
+            : 0;
 
 
     if (xpBar) {
@@ -365,39 +413,17 @@ function updateProfileUI() {
 
 
 /* =========================================================
-   HIGHSCORES
+   HIGHSCORES AKTUALISIEREN
    ========================================================= */
 
-function updateHighscores(
-    profile
-) {
+function updateHighscores(profile) {
 
     const games =
         profile.games || {};
 
 
-    const gameNames = {
-
-        reaction:
-            "Reaction",
-
-        memory:
-            "Memory",
-
-        snake:
-            "Neon Serpent",
-
-        blockrush:
-            "Block Rush",
-
-        dropduel:
-            "Drop Duel"
-
-    };
-
-
     Object.entries(
-        gameNames
+        GAME_NAMES
     ).forEach(
         ([key, gameName]) => {
 
@@ -422,11 +448,6 @@ function updateHighscores(
         }
     );
 
-
-    /*
-       Dein bestehendes HTML besitzt
-       zusätzlich #storedHighscore.
-    */
 
     const stored =
         document.querySelector(
@@ -517,13 +538,15 @@ function updateProfileScreen(
     if (profileXpBar) {
 
         const percentage =
-            Math.min(
-                100,
-                (
-                    levelData.currentXP /
-                    levelData.requiredXP
-                ) * 100
-            );
+            levelData.requiredXP > 0
+                ? Math.min(
+                    100,
+                    (
+                        levelData.currentXP /
+                        levelData.requiredXP
+                    ) * 100
+                )
+                : 0;
 
 
         profileXpBar.style.width =
@@ -531,15 +554,95 @@ function updateProfileScreen(
 
     }
 
+}
+
+
+/* =========================================================
+   SPIELSTART REGISTRIEREN
+   ========================================================= */
+
+function registerStart(game) {
+
+    const gameName =
+        GAME_NAMES[game];
+
+
+    if (!gameName) {
+        return;
+    }
+
 
     /*
-       Achievement- und Challenge-System
-       gehört momentan nicht zum aktuellen
-       profile.js.
+       Memory und Drop Duel registrieren
+       ihren Start teilweise selbst.
 
-       Deshalb wird hier bewusst nichts
-       erfunden oder doppelt gespeichert.
+       Deshalb werden sie hier nicht
+       zusätzlich registriert.
     */
+
+    if (
+        game === "memory" ||
+        game === "dropduel"
+    ) {
+
+        return;
+
+    }
+
+
+    registerGameStart(
+        gameName
+    );
+
+}
+
+
+/* =========================================================
+   SPIELERGEBNIS REGISTRIEREN
+   ========================================================= */
+
+function registerResult(
+    game,
+    result,
+    score
+) {
+
+    const gameName =
+        GAME_NAMES[game];
+
+
+    if (!gameName) {
+        return;
+    }
+
+
+    const numericScore =
+        Math.max(
+            0,
+            Number(score) || 0
+        );
+
+
+    /*
+       Memory und Drop Duel
+       verwalten ihr Ergebnis selbst.
+    */
+
+    if (
+        game === "memory" ||
+        game === "dropduel"
+    ) {
+
+        return;
+
+    }
+
+
+    registerGameResult(
+        gameName,
+        result,
+        numericScore
+    );
 
 }
 
@@ -548,9 +651,7 @@ function updateProfileScreen(
    SPIEL STARTEN
    ========================================================= */
 
-function startGame(
-    game
-) {
+function startGame(game) {
 
     stopCurrentGame();
 
@@ -561,10 +662,20 @@ function startGame(
     lastGame =
         game;
 
+    lastScore =
+        0;
 
-    switch (
+
+    /*
+       Spielstart im Profil registrieren.
+    */
+
+    registerStart(
         game
-    ) {
+    );
+
+
+    switch (game) {
 
         /* =====================================
            REACTION
@@ -603,17 +714,6 @@ function startGame(
                 "memoryScreen"
             );
 
-
-            /*
-               WICHTIG:
-
-               Memory registriert Start und
-               Ergebnis momentan selbst.
-
-               Daher machen wir hier
-               KEINE zusätzliche
-               Profilregistrierung.
-            */
 
             initMemory();
 
@@ -685,14 +785,6 @@ function startGame(
             );
 
 
-            /*
-               Drop Duel registriert
-               momentan selbst.
-
-               Deshalb hier ebenfalls
-               keine doppelte Registrierung.
-            */
-
             initDropDuel();
 
             break;
@@ -715,11 +807,14 @@ function startGame(
 
     }
 
+
+    updateProfileUI();
+
 }
 
 
 /* =========================================================
-   SCORE-SPIELE
+   SCORE-SPIELE GAME OVER
    ========================================================= */
 
 function handleScoreGameOver(
@@ -743,42 +838,21 @@ function handleScoreGameOver(
 
     /*
        Reaction, Snake und Block Rush
-       haben kein Win/Loss-System.
+       sind reine Score-Spiele.
 
-       "loss" bedeutet hier lediglich:
-       Die Runde ist beendet.
+       Eine beendete Runde wird deshalb
+       als "loss" registriert.
 
-       Das Profil-System bekommt dadurch
-       den Score und XP.
+       Das bedeutet hier NICHT,
+       dass der Spieler schlecht gespielt hat.
+       Es ist lediglich das Ergebnisformat
+       unseres Profil-Systems.
     */
 
-    /*
-       WICHTIG:
-
-       Wir importieren hier NICHT
-       registerGameResult(), weil wir
-       aktuell nur app.js anpassen.
-
-       Das würde sonst mit den bestehenden
-       Game-Dateien nicht konsistent sein.
-
-       Deshalb wird das Ergebnis über
-       ein CustomEvent an das Profil-System
-       weitergegeben, sofern eine spätere
-       Game-Datei dies unterstützt.
-    */
-
-    document.dispatchEvent(
-        new CustomEvent(
-            "arcadeGameOver",
-            {
-                detail: {
-                    game,
-                    score:
-                        numericScore
-                }
-            }
-        )
+    registerResult(
+        game,
+        "loss",
+        numericScore
     );
 
 
@@ -835,28 +909,8 @@ function showGenericGameOver(
         getArcadeProfile();
 
 
-    const gameNames = {
-
-        reaction:
-            "Reaction",
-
-        memory:
-            "Memory",
-
-        snake:
-            "Neon Serpent",
-
-        blockrush:
-            "Block Rush",
-
-        dropduel:
-            "Drop Duel"
-
-    };
-
-
     const gameName =
-        gameNames[game];
+        GAME_NAMES[game];
 
 
     const gameData =
@@ -869,19 +923,27 @@ function showGenericGameOver(
         gameData?.bestScore || 0;
 
 
+    /*
+       Prüfen, ob der Score ein
+       neuer Highscore ist.
+
+       Da registerGameResult()
+       bereits gespeichert wurde,
+       ist ein neuer Highscore dann
+       gleich dem aktuellen bestScore.
+    */
+
+    const isHighscore =
+        score > 0 &&
+        score >= best;
+
+
     if (highscoreMessage) {
 
-        if (
-            score > 0 &&
-            score >= best
-        ) {
+        if (isHighscore) {
 
             highscoreMessage.textContent =
                 "★ NEUER HIGHSCORE! ★";
-
-            highscoreMessage.classList.remove(
-                "hidden"
-            );
 
         }
         else {
@@ -889,11 +951,12 @@ function showGenericGameOver(
             highscoreMessage.textContent =
                 `BESTER SCORE: ${best}`;
 
-            highscoreMessage.classList.remove(
-                "hidden"
-            );
-
         }
+
+
+        highscoreMessage.classList.remove(
+            "hidden"
+        );
 
     }
 
@@ -930,8 +993,11 @@ document.addEventListener(
     event => {
 
         const score =
-            Number(
-                event.detail?.score || 0
+            Math.max(
+                0,
+                Number(
+                    event.detail?.score || 0
+                )
             );
 
 
@@ -943,13 +1009,9 @@ document.addEventListener(
 
 
         /*
-           Memory hat das Ergebnis
-           bereits selbst registriert.
-
-           Deshalb hier NICHT noch einmal
-           registerGameResult() aufrufen.
+           Memory registriert sein Ergebnis
+           bereits selbst.
         */
-
 
         updateProfileUI();
 
