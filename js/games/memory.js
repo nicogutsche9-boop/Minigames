@@ -1,6 +1,6 @@
 import {
   registerGameStart,
-  registerGameResult
+  recordGame
 } from "../arcade/profile.js";
 
 
@@ -129,8 +129,7 @@ const SYMBOLS = [
 
 function shuffle(array) {
 
-  const result =
-    [...array];
+  const result = [...array];
 
   for (
     let i = result.length - 1;
@@ -170,12 +169,10 @@ function createCards() {
       pairsCount
     );
 
-
   const duplicated = [
     ...symbols,
     ...symbols
   ];
-
 
   return shuffle(
     duplicated.map(
@@ -197,23 +194,24 @@ function createCards() {
 
 function renderBoard() {
 
+  if (!board) return;
+
   board.innerHTML = "";
 
   board.className =
     `memory-board mode-${pairsCount}`;
 
-
   cards.forEach(card => {
 
     const button =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
-    button.type =
-      "button";
+    button.type = "button";
 
     button.className =
       "memory-card";
-
 
     if (card.flipped) {
 
@@ -223,7 +221,6 @@ function renderBoard() {
 
     }
 
-
     if (card.matched) {
 
       button.classList.add(
@@ -232,10 +229,8 @@ function renderBoard() {
 
     }
 
-
     button.dataset.id =
       card.id;
-
 
     button.innerHTML = `
       <span class="memory-card-inner">
@@ -251,12 +246,10 @@ function renderBoard() {
       </span>
     `;
 
-
     button.addEventListener(
       "click",
       () => flipCard(card.id)
     );
-
 
     board.appendChild(
       button
@@ -273,26 +266,39 @@ function renderBoard() {
 
 function updateUI() {
 
-  pairsElement.textContent =
-    matchedCards.length / 2;
+  if (pairsElement) {
 
-  pairTotalElement.textContent =
-    pairsCount;
+    pairsElement.textContent =
+      matchedCards.length / 2;
 
-  movesElement.textContent =
-    moves;
+  }
 
+  if (pairTotalElement) {
+
+    pairTotalElement.textContent =
+      pairsCount;
+
+  }
+
+  if (movesElement) {
+
+    movesElement.textContent =
+      moves;
+
+  }
 
   const mode =
     MEMORY_MODES[pairsCount];
 
-  if (mode) {
+  if (
+    mode &&
+    modeTitle
+  ) {
 
     modeTitle.textContent =
       mode.label;
 
   }
-
 
   modeButtons.forEach(
     button => {
@@ -311,10 +317,12 @@ function updateUI() {
 
 
 /* =========================================================
-   STATUS TEXT
+   STATUS
    ========================================================= */
 
 function updateStatus() {
+
+  if (!statusElement) return;
 
   if (!running) {
 
@@ -325,12 +333,12 @@ function updateStatus() {
 
   }
 
-
   const found =
     matchedCards.length / 2;
 
-
-  if (found === pairsCount) {
+  if (
+    found === pairsCount
+  ) {
 
     statusElement.textContent =
       "🎉 Alle Paare gefunden!";
@@ -338,7 +346,6 @@ function updateStatus() {
     return;
 
   }
-
 
   if (locked) {
 
@@ -349,8 +356,9 @@ function updateStatus() {
 
   }
 
-
-  if (flippedCards.length === 1) {
+  if (
+    flippedCards.length === 1
+  ) {
 
     statusElement.textContent =
       "Finde das passende Paar!";
@@ -358,7 +366,6 @@ function updateStatus() {
     return;
 
   }
-
 
   statusElement.textContent =
     `Finde alle ${pairsCount} Paare!`;
@@ -381,19 +388,16 @@ function flipCard(id) {
 
   }
 
-
   const card =
     cards.find(
       item => item.id === id
     );
-
 
   if (!card) {
 
     return;
 
   }
-
 
   if (
     card.flipped ||
@@ -404,7 +408,6 @@ function flipCard(id) {
 
   }
 
-
   if (
     flippedCards.length >= 2
   ) {
@@ -413,18 +416,15 @@ function flipCard(id) {
 
   }
 
-
   card.flipped = true;
 
   flippedCards.push(card);
-
 
   moves++;
 
   renderBoard();
   updateUI();
   updateStatus();
-
 
   if (
     flippedCards.length === 2
@@ -448,13 +448,18 @@ function checkPair() {
     second
   ] = flippedCards;
 
-
   locked = true;
 
   updateStatus();
 
-
   setTimeout(() => {
+
+    if (!running) {
+
+      locked = false;
+      return;
+
+    }
 
     if (
       first.symbol ===
@@ -477,7 +482,6 @@ function checkPair() {
       updateUI();
       updateStatus();
 
-
       if (
         matchedCards.length ===
         cards.length
@@ -490,7 +494,6 @@ function checkPair() {
       return;
 
     }
-
 
     first.flipped = false;
     second.flipped = false;
@@ -515,28 +518,25 @@ function checkPair() {
 function calculateScore() {
 
   /*
-     Weniger Züge = höherer Score.
+    Weniger Züge = höherer Score.
 
-     Basis:
-     - 8 Paare  -> 1000
-     - 16 Paare -> 2000
-     - 32 Paare -> 4000
+    Basis:
+    - 8 Paare  -> 1000
+    - 16 Paare -> 2000
+    - 32 Paare -> 4000
 
-     Jeder zusätzliche Zug
-     reduziert den Score.
+    Jeder zusätzliche Zug
+    reduziert den Score.
 
-     Zusätzlich gibt es einen
-     kleinen Zeitbonus.
+    Zusätzlich gibt es einen
+    kleinen Zeitbonus.
   */
-
 
   const baseScore =
     pairsCount * 125;
 
-
   const perfectMoves =
     pairsCount;
-
 
   const extraMoves =
     Math.max(
@@ -544,10 +544,8 @@ function calculateScore() {
       moves - perfectMoves
     );
 
-
   const movePenalty =
     extraMoves * 15;
-
 
   const elapsedSeconds =
     Math.max(
@@ -558,12 +556,10 @@ function calculateScore() {
       )
     );
 
-
   const timePenalty =
     Math.floor(
       elapsedSeconds * 2
     );
-
 
   return Math.max(
     0,
@@ -587,67 +583,57 @@ function finishGame() {
 
   }
 
-
   running = false;
   locked = false;
-
 
   const score =
     calculateScore();
 
-
   statusElement.textContent =
     `🎉 GESCHAFFT! ${score} Punkte`;
-
 
   renderBoard();
   updateUI();
 
 
-  /*
-     Profil-System aktualisieren.
+  /* =======================================================
+     PROFIL-SYSTEM
+     ======================================================= */
 
-     Memory wird als
-     "memory" registriert.
-  */
+  let result = null;
 
   try {
 
-    registerGameResult(
-      "Memory",
-      "win"
-    );
+    /*
+      recordGame übernimmt:
 
-  }
+      - Highscore
+      - XP
+      - Coins
+      - Achievements
+      - Tages-Challenges
+      - Level
+    */
 
-  catch (error) {
+    result =
+      recordGame(
+        "memory",
+        score
+      );
+
+  } catch (error) {
 
     console.warn(
-      "registerGameResult fehlgeschlagen:",
+      "Memory Profil-Update fehlgeschlagen:",
       error
     );
 
   }
 
 
-  /*
-     Falls dein Profil-System
-     recordGame exportiert,
-     wird es hier ebenfalls
-     verwendet.
-  */
-
-  /*
-     Wichtig:
-     Wir versuchen recordGame
-     dynamisch über die globale
-     Arcade-Struktur nicht zu erzwingen.
-
-     Der Score wird deshalb
-     zusätzlich über ein
-     CustomEvent an app.js
-     gemeldet.
-  */
+  /* =======================================================
+     APP.JS BENACHRICHTIGEN
+     ======================================================= */
 
   document.dispatchEvent(
     new CustomEvent(
@@ -656,7 +642,8 @@ function finishGame() {
         detail: {
           score,
           moves,
-          pairs: pairsCount
+          pairs: pairsCount,
+          result
         }
       }
     )
@@ -671,9 +658,24 @@ function finishGame() {
 
 function startGame() {
 
-  registerGameStart(
-    "Memory"
-  );
+  /*
+    Spielstart beim Profil registrieren.
+  */
+
+  try {
+
+    registerGameStart(
+      "Memory"
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Memory Game-Start konnte nicht registriert werden:",
+      error
+    );
+
+  }
 
 
   running = true;
@@ -689,10 +691,8 @@ function startGame() {
   gameStartTime =
     Date.now();
 
-
   cards =
     createCards();
-
 
   updateUI();
   updateStatus();
@@ -721,7 +721,6 @@ function setMode(pairs) {
   const newPairs =
     Number(pairs);
 
-
   if (
     !MEMORY_MODES[newPairs]
   ) {
@@ -730,16 +729,18 @@ function setMode(pairs) {
 
   }
 
-
   pairsCount =
     newPairs;
-
 
   localStorage.setItem(
     "memoryPairs",
     String(pairsCount)
   );
 
+  /*
+    Wenn ein Modus ausgewählt wird,
+    startet direkt eine neue Runde.
+  */
 
   startGame();
 
@@ -773,9 +774,9 @@ export function initMemory() {
   if (initialized) {
 
     /*
-       Beim erneuten Öffnen
-       wird trotzdem das Board
-       sauber zurückgesetzt.
+      Beim erneuten Öffnen
+      wird das Board sauber
+      zurückgesetzt.
     */
 
     startGame();
@@ -791,7 +792,6 @@ export function initMemory() {
         "memoryPairs"
       )
     );
-
 
   if (
     MEMORY_MODES[savedPairs]
@@ -834,7 +834,6 @@ export function initMemory() {
 
 
   initialized = true;
-
 
   startGame();
 
