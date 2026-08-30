@@ -1103,6 +1103,7 @@ function finishGame(winner) {
 
     let score = 0;
 
+
     if (winner === HUMAN) {
 
         playerWins++;
@@ -1110,13 +1111,24 @@ function finishGame(winner) {
         // Sieg = 100 Punkte
         score = 100;
 
+        registerGameResult(
+            "Drop Duel",
+            "win",
+            score
+        );
+
+
         resultTitle.textContent =
             "🎉 GEWONNEN!";
+
 
         resultText.textContent =
             "Vier Steine in einer Reihe!";
 
-        setTurn("SIEG!");
+
+        setTurn(
+            "SIEG!"
+        );
 
     }
 
@@ -1127,13 +1139,24 @@ function finishGame(winner) {
         // Niederlage = 25 Punkte
         score = 25;
 
+        registerGameResult(
+            "Drop Duel",
+            "loss",
+            score
+        );
+
+
         resultTitle.textContent =
             "🤖 VERLOREN";
+
 
         resultText.textContent =
             "Der Computer hat gewonnen.";
 
-        setTurn("NIEDERLAGE");
+
+        setTurn(
+            "NIEDERLAGE"
+        );
 
     }
 
@@ -1142,32 +1165,37 @@ function finishGame(winner) {
         // Unentschieden = 50 Punkte
         score = 50;
 
+        registerGameResult(
+            "Drop Duel",
+            "draw",
+            score
+        );
+
+
         resultTitle.textContent =
             "🤝 UNENTSCHIEDEN";
+
 
         resultText.textContent =
             "Das Spielfeld ist voll.";
 
-        setTurn("DRAW");
+
+        setTurn(
+            "DRAW"
+        );
 
     }
+
 
     updateScore();
 
-    gameOver.classList.remove("hidden");
+
+    gameOver.classList.remove(
+        "hidden"
+    );
+
 
     updateColumnButtons();
-
-    /*
-       Ergebnis an das zentrale
-       Mini-Arcade-Profil übergeben.
-    */
-    if (window.finishMiniArcadeGame) {
-        window.finishMiniArcadeGame(
-            "dropduel",
-            score
-        );
-    }
 
 }
 
