@@ -1106,12 +1106,6 @@ function finishGame(winner) {
         // Sieg = 100 Punkte
         score = 100;
 
-        registerGameResult(
-            "Drop Duel",
-            "win",
-            score
-        );
-
 
         resultTitle.textContent =
             "🎉 GEWONNEN!";
@@ -1134,12 +1128,6 @@ function finishGame(winner) {
         // Niederlage = 25 Punkte
         score = 25;
 
-        registerGameResult(
-            "Drop Duel",
-            "loss",
-            score
-        );
-
 
         resultTitle.textContent =
             "🤖 VERLOREN";
@@ -1160,12 +1148,6 @@ function finishGame(winner) {
         // Unentschieden = 50 Punkte
         score = 50;
 
-        registerGameResult(
-            "Drop Duel",
-            "draw",
-            score
-        );
-
 
         resultTitle.textContent =
             "🤝 UNENTSCHIEDEN";
@@ -1180,6 +1162,14 @@ function finishGame(winner) {
         );
 
     }
+
+
+    // Ergebnis an das zentrale Profil-System senden
+    const result =
+        recordGame(
+            "dropduel",
+            score
+        );
 
 
     updateScore();
