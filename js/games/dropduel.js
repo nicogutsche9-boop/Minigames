@@ -1,3 +1,12 @@
+import {
+    registerGameStart,
+    registerGameResult
+} from "../arcade/profile.js";
+
+import {
+    recordDropDuelResult
+} from "../achievements.js";
+
 const ROWS = 6;
 const COLS = 7;
 
