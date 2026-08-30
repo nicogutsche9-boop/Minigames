@@ -72,3 +72,10 @@ Das vierte Minigame ist Block Rush – ein eigenes Falling-Blocks-Arcade-Spiel m
 - Level und steigende Geschwindigkeit
 - Vorschau des nächsten Steins
 - Desktop- und Touch-Steuerung
+
+
+## 🧠 Memory-Modi
+
+- **8 Paare** – Classic
+- **16 Paare** – Pro
+- **32 Paare** – **Memory Marathon**, zeitlich begrenztes Event bis 13.09.2026

@@ -144,7 +144,7 @@ document.querySelectorAll(".game-card").forEach(button => {
 });
 document.querySelector("#reactionMenuButton")?.addEventListener("click", () => goTo("menu"));
 document.querySelector("#memoryMenuButton")?.addEventListener("click", () => goTo("menu"));
-document.querySelector("#memoryResetButton")?.addEventListener("click", () => initMemoryGame());
+document.querySelector("#memoryResetButton")?.addEventListener("click", () => initMemoryGame({ onComplete: score => finishGame("memory", score) }));
 
 document.querySelector("#snakeMenuButton")?.addEventListener("click", () => goTo("menu"));
 document.querySelector("#snakeResetButton")?.addEventListener("click", () => initSnakeGame());

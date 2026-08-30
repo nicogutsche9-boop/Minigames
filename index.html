@@ -178,11 +178,34 @@
           <h2>🧠 MEMORY</h2>
           <button id="memoryResetButton" class="icon-button" aria-label="Memory neu starten">↻</button>
         </div>
-        <div class="stats memory-stats">
-          <div class="stat-card"><span>🏆 PAARE</span><strong><span id="memoryPairs">0</span>/8</strong></div>
-          <div class="stat-card time"><span>↻ ZÜGE</span><strong id="memoryMoves">0</strong></div>
+
+        <div class="memory-mode-panel">
+          <div>
+            <span class="memory-mode-label">SPIELMODUS</span>
+            <strong id="memoryModeTitle">CLASSIC · 8 PAARE</strong>
+          </div>
+          <div class="memory-mode-buttons">
+            <button class="memory-mode-button active" data-memory-pairs="8">8 PAARE</button>
+            <button class="memory-mode-button" data-memory-pairs="16">16 PAARE</button>
+            <button class="memory-mode-button event" data-memory-pairs="32">
+              <span>🔥</span> 32 PAARE
+              <small id="memoryEventCountdown">EVENT</small>
+            </button>
+          </div>
         </div>
-        <div id="memoryBoard" class="memory-board"></div>
+
+        <div class="stats memory-stats">
+          <div class="stat-card">
+            <span>🏆 PAARE</span>
+            <strong><span id="memoryPairs">0</span>/<span id="memoryPairTotal">8</span></strong>
+          </div>
+          <div class="stat-card time">
+            <span>↻ ZÜGE</span>
+            <strong id="memoryMoves">0</strong>
+          </div>
+        </div>
+
+        <div id="memoryBoard" class="memory-board mode-8"></div>
         <div id="memoryStatus" class="memory-status">Finde alle 8 Paare!</div>
       </section>
 

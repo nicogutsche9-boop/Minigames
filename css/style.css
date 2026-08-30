@@ -911,3 +911,140 @@ button { font: inherit; }
     max-width: 300px;
   }
 }
+
+
+/* ==================== */
+/* MEMORY MODES          */
+/* ==================== */
+
+.memory-mode-panel {
+  width: min(760px, 100%);
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(119, 148, 221, .22);
+  border-radius: 15px;
+  background: rgba(11, 17, 34, .72);
+}
+
+.memory-mode-label {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.memory-mode-panel strong {
+  display: block;
+  margin-top: 3px;
+  color: #eef2ff;
+  font-size: 13px;
+}
+
+.memory-mode-buttons {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.memory-mode-button {
+  min-height: 38px;
+  padding: 6px 11px;
+  border: 1px solid rgba(119, 148, 221, .24);
+  border-radius: 10px;
+  background: rgba(16, 23, 45, .9);
+  color: #aeb9d8;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.memory-mode-button.active {
+  border-color: rgba(255, 209, 48, .8);
+  background: rgba(255, 209, 48, .14);
+  color: #ffd130;
+}
+
+.memory-mode-button.event {
+  border-color: rgba(255, 92, 100, .4);
+}
+
+.memory-mode-button.event.active {
+  border-color: rgba(255, 92, 100, .85);
+  background: rgba(255, 92, 100, .14);
+  color: #ff9da2;
+}
+
+.memory-mode-button small {
+  display: block;
+  margin-top: 1px;
+  color: #ff9da2;
+  font-size: 8px;
+}
+
+.memory-mode-button.expired {
+  opacity: .4;
+  cursor: not-allowed;
+  filter: grayscale(.8);
+}
+
+.memory-board.mode-16 {
+  grid-template-columns: repeat(6, 1fr);
+  max-width: 760px;
+}
+
+.memory-board.mode-32 {
+  grid-template-columns: repeat(8, 1fr);
+  max-width: 900px;
+  gap: 9px;
+}
+
+.memory-board.mode-16 .memory-face {
+  border-radius: 11px;
+}
+
+.memory-board.mode-16 .memory-front {
+  font-size: clamp(24px, 4vw, 40px);
+}
+
+.memory-board.mode-32 .memory-face {
+  border-radius: 9px;
+}
+
+.memory-board.mode-32 .memory-front {
+  font-size: clamp(18px, 3vw, 30px);
+}
+
+@media (max-width: 700px) {
+  .memory-mode-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .memory-mode-buttons {
+    justify-content: stretch;
+  }
+
+  .memory-mode-button {
+    flex: 1 1 0;
+  }
+
+  .memory-board.mode-16 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .memory-board.mode-32 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .memory-board.mode-32 .memory-front {
+    font-size: clamp(20px, 6vw, 34px);
+  }
+}
