@@ -17,6 +17,12 @@
 
     <main>
       <section id="menuScreen" class="screen active">
+        <div class="profile-strip">
+          <div class="level-badge">LV <strong id="levelValue">1</strong></div>
+          <div class="xp-track"><span id="xpBar"></span></div>
+          <div class="xp-text" id="xpValue">0/100 XP</div>
+        </div>
+
         <div class="hero">
           <div class="hero-star">★</div>
           <h1>MINI<br><span>ARCADE</span></h1>
@@ -31,11 +37,11 @@
             <span class="play-pill">SPIELEN</span>
           </button>
 
-          <button class="game-card disabled" disabled>
+          <button class="game-card" data-game="memory">
             <div class="card-icon pink">🧠</div>
             <h2>MEMORY</h2>
             <p>Finde alle Kartenpaare.</p>
-            <span class="soon-pill">BALD VERFÜGBAR</span>
+            <span class="play-pill memory-pill">SPIELEN</span>
           </button>
 
           <button class="game-card" data-game="snake">
@@ -125,6 +131,7 @@
         <p class="score-label">DEIN SCORE</p>
         <div id="finalScore" class="final-score">0</div>
         <p id="highscoreMessage" class="highscore-message">★ NEUER HIGHSCORE! ★</p>
+        <p id="rewardMessage" class="reward-message"></p>
         <button id="playAgainButton" class="primary-button">↻ &nbsp; NOCHMAL SPIELEN</button>
         <button id="gameOverMenuButton" class="secondary-button">⌂ &nbsp; ZUM MENÜ</button>
       </section>
@@ -132,7 +139,12 @@
       <section id="highscoreScreen" class="screen simple-screen">
         <button id="highscoreBackButton" class="back-button">← Menü</button>
         <h2>🏆 HIGHSCORES</h2>
-        <div class="highscore-panel">
+        <div class="highscore-list">
+          <div class="highscore-row"><span>⚡ Reaction</span><strong id="reactionBest">0</strong></div>
+          <div class="highscore-row"><span>🧠 Memory</span><strong id="memoryBest">0</strong></div>
+          <div class="highscore-row"><span>🐍 Snake</span><strong id="snakeBest">0</strong></div>
+        </div>
+        <div class="highscore-panel compact">
           <p>⚡ Reaction</p>
           <strong id="storedHighscore">0</strong>
           <small>Dein bester Score</small>
