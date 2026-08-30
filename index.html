@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mini Arcade</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- ==================== -->
+        <!-- STARTMENÜ             -->
+        <!-- ==================== -->
+
+        <section id="menu-screen" class="screen active">
+
+            <h1>🎮 Mini Arcade</h1>
+
+            <p class="subtitle">
+                Kleine Spiele. Große Scores.
+            </p>
+
+            <div class="games">
+
+                <button
+                    class="game-card"
+                    data-game="reaction"
+                >
+                    <span class="game-icon">⚡</span>
+                    <span class="game-title">Reaction</span>
+                    <span class="game-description">
+                        Wie schnell kannst du reagieren?
+                    </span>
+                </button>
+
+                <button
+                    class="game-card disabled"
+                    disabled
+                >
+                    <span class="game-icon">🧠</span>
+                    <span class="game-title">Memory</span>
+                    <span class="game-description">
+                        Bald verfügbar
+                    </span>
+                </button>
+
+                <button
+                    class="game-card disabled"
+                    disabled
+                >
+                    <span class="game-icon">🐍</span>
+                    <span class="game-title">Snake</span>
+                    <span class="game-description">
+                        Bald verfügbar
+                    </span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== -->
+        <!-- REACTION GAME         -->
+        <!-- ==================== -->
+
+        <section id="reaction-screen" class="screen">
+
+            <div class="game-header">
+
+                <button id="reaction-menu-button" class="back-button">
+                    ← Menü
+                </button>
+
+                <h2>⚡ Reaction</h2>
+
+            </div>
+
+
+            <div class="score-bar">
+
+                <div>
+                    Punkte:
+                    <strong id="reaction-score">0</strong>
+                </div>
+
+                <div>
+                    Zeit:
+                    <strong id="reaction-time">30</strong>s
+                </div>
+
+            </div>
+
+
+            <div id="reaction-game" class="game-area">
+
+                <div
+                    id="reaction-target"
+                    class="reaction-target hidden"
+                >
+                </div>
+
+                <div
+                    id="reaction-start"
+                    class="game-message"
+                >
+                    <h3>Bereit?</h3>
+
+                    <p>
+                        Klicke so schnell wie möglich auf das Ziel.
+                    </p>
+
+                    <button id="reaction-start-button">
+                        Spiel starten
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== -->
+        <!-- GAME OVER             -->
+        <!-- ==================== -->
+
+        <section id="game-over-screen" class="screen">
+
+            <h2>🏆 Game Over</h2>
+
+            <p>Dein Score:</p>
+
+            <div id="final-score" class="final-score">
+                0
+            </div>
+
+            <button id="play-again-button">
+                Nochmal spielen
+            </button>
+
+            <button id="game-over-menu-button" class="secondary-button">
+                Zurück zum Menü
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- JavaScript -->
+
+    <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
