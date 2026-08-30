@@ -231,6 +231,19 @@ export function initSnakeGame(options = {}) {
   document.querySelector("#startSnakeButton").onclick = startGame;
   document.querySelector("#snakeRestartButton").onclick = startGame;
 
+  document.querySelectorAll(".snake-arrow").forEach(button => {
+    button.onclick = () => {
+      const directions = {
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 }
+      };
+
+      setDirection(directions[button.dataset.direction]);
+    };
+  });
+
   resetState();
   running = false;
   intro.classList.remove("hidden");

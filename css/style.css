@@ -693,3 +693,95 @@ button { font: inherit; }
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==================== */
+/* SNAKE TOUCH CONTROLS */
+/* ==================== */
+
+.snake-controls {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: max-content;
+  margin: 16px auto 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.snake-control-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.snake-arrow {
+  width: 58px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(53, 232, 120, .35);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(21, 37, 38, .95), rgba(8, 17, 19, .95));
+  color: #8affaa;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, .25), inset 0 0 12px rgba(53, 232, 120, .04);
+  transition: transform .08s ease, border-color .08s ease, background .08s ease;
+}
+
+.snake-arrow:active {
+  transform: scale(.92);
+  border-color: rgba(53, 232, 120, .8);
+  background: rgba(53, 232, 120, .16);
+}
+
+.snake-control-center {
+  width: 58px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(53, 232, 120, .15);
+  color: rgba(53, 232, 120, .45);
+  background: rgba(7, 16, 18, .75);
+  font-size: 18px;
+}
+
+@media (min-width: 701px) {
+  .snake-controls {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .snake-controls {
+    margin-bottom: 2px;
+  }
+
+  .snake-arrow {
+    width: 64px;
+    height: 54px;
+    font-size: 21px;
+  }
+
+  .snake-control-center {
+    width: 64px;
+    height: 54px;
+  }
+}
+
+@media (max-width: 420px) {
+  .snake-arrow {
+    width: 58px;
+    height: 50px;
+  }
+
+  .snake-control-center {
+    width: 58px;
+    height: 50px;
+  }
+}

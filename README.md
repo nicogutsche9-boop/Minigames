@@ -56,3 +56,8 @@ Alle drei Spiele verwenden jetzt ein gemeinsames Profil:
 - 3 tägliche Challenges
 - Fortschritt wird pro Tag automatisch zurückgesetzt
 - Achievements und Challenges belohnen XP und Coins
+
+
+## 📱 Snake auf Mobilgeräten
+
+Snake besitzt jetzt ein touchfreundliches Steuerkreuz. Auf Desktop bleibt die Tastatursteuerung mit WASD/Pfeiltasten erhalten.
