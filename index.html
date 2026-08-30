@@ -124,6 +124,36 @@
         <p class="snake-help">Tastatur: <strong>W A S D</strong> oder <strong>↑ ← ↓ →</strong> · Auf Mobilgeräten kannst du die Pfeiltasten verwenden.</p>
       </section>
 
+
+      <section id="profileScreen" class="screen">
+        <div class="game-topbar">
+          <button id="profileBackButton" class="back-button">← <span>Menü</span></button>
+          <h2>👤 PROFIL</h2>
+          <span></span>
+        </div>
+
+        <div class="profile-hero">
+          <div class="avatar">🎮</div>
+          <div>
+            <h3>ARCADE PLAYER</h3>
+            <p>Level <strong id="profileLevel">1</strong> · <span id="profileCoins">1.250</span> 🪙</p>
+          </div>
+        </div>
+
+        <div class="profile-xp">
+          <div><span>XP</span><strong id="profileXp">0/100</strong></div>
+          <div class="xp-track"><span id="profileXpBar"></span></div>
+        </div>
+
+        <h3 class="section-title">🏆 Erfolge</h3>
+        <div id="achievementsGrid" class="achievements-grid"></div>
+
+        <h3 class="section-title">📅 Tages-Challenges</h3>
+        <div id="challengesList" class="challenges-list"></div>
+
+        <button id="resetProfileButton" class="danger-button">Profil zurücksetzen</button>
+      </section>
+
       <section id="gameOverScreen" class="screen game-over">
         <div class="confetti" aria-hidden="true">✦　◆　•　★　◇　✦　•　◆　★</div>
         <div class="trophy">🏆</div>
@@ -132,6 +162,7 @@
         <div id="finalScore" class="final-score">0</div>
         <p id="highscoreMessage" class="highscore-message">★ NEUER HIGHSCORE! ★</p>
         <p id="rewardMessage" class="reward-message"></p>
+        <p id="achievementReward" class="achievement-reward"></p>
         <button id="playAgainButton" class="primary-button">↻ &nbsp; NOCHMAL SPIELEN</button>
         <button id="gameOverMenuButton" class="secondary-button">⌂ &nbsp; ZUM MENÜ</button>
       </section>

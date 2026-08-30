@@ -2,13 +2,14 @@ import { showScreen } from "./menu.js";
 import { initReactionGame, stopReactionGame } from "./games/reaction.js";
 import { initMemoryGame } from "./games/memory.js";
 import { initSnakeGame, stopSnakeGame } from "./games/snake.js";
-import { getProfile, getBest, recordGame, resetProfile, getLevel, getLevelProgress } from "./scores.js";
+import { getProfile, getBest, recordGame, resetProfile, getLevel, getLevelProgress, getAchievements, getChallenges } from "./achievements.js";
 
 const screens = {
   menu: "menuScreen",
   reaction: "reactionScreen",
   memory: "memoryScreen",
   snake: "snakeScreen",
+  profile: "profileScreen",
   gameOver: "gameOverScreen",
   highscores: "highscoreScreen",
   settings: "settingsScreen"
@@ -34,6 +35,50 @@ function updateProfileUI() {
   if (xpBar) xpBar.style.width = `${getLevelProgress(profile.xp)}%`;
 
   updateProfileUI();
+}
+
+function renderProfile() {
+  const profile = getProfile();
+  const level = getLevel(profile.xp);
+  const progress = getLevelProgress(profile.xp);
+
+  document.querySelector("#profileLevel").textContent = level;
+  document.querySelector("#profileCoins").textContent = profile.coins.toLocaleString("de-DE");
+  document.querySelector("#profileXp").textContent = `${progress}/100`;
+  document.querySelector("#profileXpBar").style.width = `${progress}%`;
+
+  const achievementsGrid = document.querySelector("#achievementsGrid");
+  achievementsGrid.innerHTML = getAchievements().map(a => {
+    const unlocked = profile.achievements.includes(a.id);
+    return `
+      <article class="achievement-card ${unlocked ? "" : "locked"}">
+        <div class="achievement-icon">${a.icon}</div>
+        <div>
+          <strong>${a.title}</strong>
+          <p>${a.desc}</p>
+          <p>+${a.reward} 🪙</p>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  const challengesList = document.querySelector("#challengesList");
+  challengesList.innerHTML = getChallenges().map(c => {
+    const progressValue = profile.challengeProgress[c.id] || 0;
+    const done = profile.challengeRewards.includes(c.id);
+    const percent = Math.min(100, Math.round((progressValue / c.target) * 100));
+    return `
+      <article class="challenge-card ${done ? "done" : ""}">
+        <strong>${done ? "✓ " : ""}${c.title}</strong>
+        <p>${c.desc}</p>
+        <div class="challenge-progress"><span style="width:${percent}%"></span></div>
+        <div class="challenge-meta">
+          <span>${Math.min(progressValue, c.target)} / ${c.target}</span>
+          <span>+${c.reward} 🪙</span>
+        </div>
+      </article>
+    `;
+  }).join("");
 }
 
 function finishGame(game, score) {
@@ -136,3 +181,19 @@ document.querySelector("#resetScoreButton").addEventListener("click", () => {
 });
 
 updateHighscoreUI();
+
+
+document.querySelector("#profileButton").addEventListener("click", () => {
+  renderProfile();
+  goTo("profile");
+});
+
+document.querySelector("#profileBackButton").addEventListener("click", () => goTo("menu"));
+
+document.querySelector("#resetProfileButton").addEventListener("click", () => {
+  if (confirm("Wirklich Profil, XP, Coins und Highscores zurücksetzen?")) {
+    resetProfile();
+    renderProfile();
+    updateProfileUI();
+  }
+});

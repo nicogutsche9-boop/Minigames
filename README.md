@@ -47,3 +47,12 @@ Alle drei Spiele verwenden jetzt ein gemeinsames Profil:
 - separate Highscores für Reaction, Memory und Snake
 - Belohnungen nach jeder Runde
 - Speicherung im Browser über `localStorage`
+
+
+## 🏅 Profil & Motivation
+
+- Spielerprofil mit Level und XP-Balken
+- 6 Achievements mit Coin-Belohnungen
+- 3 tägliche Challenges
+- Fortschritt wird pro Tag automatisch zurückgesetzt
+- Achievements und Challenges belohnen XP und Coins
