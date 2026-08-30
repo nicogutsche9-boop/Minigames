@@ -126,6 +126,8 @@ function updateHighscoreUI() {
   if (snakeBest) snakeBest.textContent = getBest("snake");
   const blockrushBest = document.querySelector("#blockrushBest");
   if (blockrushBest) blockrushBest.textContent = getBest("blockrush");
+  const dropduelBest = document.querySelector("#dropduelBest");
+if (dropduelBest) dropduelBest.textContent = getBest("dropduel");
 }
 
 document.querySelectorAll(".game-card").forEach(button => {
