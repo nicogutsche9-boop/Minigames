@@ -8,10 +8,6 @@ import {
     registerGameResult
 } from "../arcade/profile.js";
 
-import {
-    recordDropDuelResult
-} from "../achievements.js";
-
 
 const ROWS = 6;
 const COLS = 7;
@@ -40,7 +36,7 @@ let initialized = false;
 
 let onGameOver = null;
 
-let computerTimer = null;
+let gameStarted = false;
 
 
 /* =========================================================
@@ -143,13 +139,20 @@ function createBoard() {
 
 function getPlayableColumns() {
 
+    if (!board.length) {
+
+        return [];
+
+    }
+
+
     return Array.from(
         {
             length: COLS
         },
-        (_, column) => column
-    )
-    .filter(
+        (_, column) =>
+            column
+    ).filter(
         column =>
             board[0][column] === null
     );
@@ -161,7 +164,9 @@ function getPlayableColumns() {
    FREIE REIHE
    ========================================================= */
 
-function getOpenRow(column) {
+function getOpenRow(
+    column
+) {
 
     for (
         let row = ROWS - 1;
@@ -197,9 +202,7 @@ function placePiece(
         getOpenRow(column);
 
 
-    if (
-        row === -1
-    ) {
+    if (row === -1) {
 
         return -1;
 
@@ -222,12 +225,13 @@ function placePiece(
 function renderBoard() {
 
     if (!boardElement) {
+
         return;
+
     }
 
 
-    boardElement.innerHTML =
-        "";
+    boardElement.innerHTML = "";
 
 
     for (
@@ -299,18 +303,19 @@ function renderBoard() {
 
 
 /* =========================================================
-   SPALTEN-BUTTONS
+   SPALTEN-BUTTONS ERSTELLEN
    ========================================================= */
 
 function createColumnButtons() {
 
     if (!columnsElement) {
+
         return;
+
     }
 
 
-    columnsElement.innerHTML =
-        "";
+    columnsElement.innerHTML = "";
 
 
     for (
@@ -360,7 +365,9 @@ function createColumnButtons() {
 function updateColumnButtons() {
 
     if (!columnsElement) {
+
         return;
+
     }
 
 
@@ -400,10 +407,14 @@ function updateColumnButtons() {
    STATUS
    ========================================================= */
 
-function setTurn(text) {
+function setTurn(
+    text
+) {
 
     if (!turnElement) {
+
         return;
+
     }
 
 
@@ -441,7 +452,9 @@ function updateScore() {
    GEWINN PRÜFEN
    ========================================================= */
 
-function checkWin(player) {
+function checkWin(
+    player
+) {
 
     const directions = [
 
@@ -582,9 +595,7 @@ function wouldWin(
         getOpenRow(column);
 
 
-    if (
-        row === -1
-    ) {
+    if (row === -1) {
 
         return false;
 
@@ -618,9 +629,7 @@ function chooseEasyMove() {
         getPlayableColumns();
 
 
-    if (
-        !playable.length
-    ) {
+    if (!playable.length) {
 
         return -1;
 
@@ -647,9 +656,7 @@ function chooseMediumMove() {
         getPlayableColumns();
 
 
-    if (
-        !playable.length
-    ) {
+    if (!playable.length) {
 
         return -1;
 
@@ -969,7 +976,9 @@ function minimax(
         ) {
 
             const row =
-                getOpenRow(column);
+                getOpenRow(
+                    column
+                );
 
 
             board[row][column] =
@@ -1030,7 +1039,9 @@ function minimax(
     ) {
 
         const row =
-            getOpenRow(column);
+            getOpenRow(
+                column
+            );
 
 
         board[row][column] =
@@ -1079,7 +1090,7 @@ function minimax(
 
 
 /* =========================================================
-   SCHWEREN ZUG WÄHLEN
+   SCHWER
    ========================================================= */
 
 function chooseHardMove() {
@@ -1088,9 +1099,7 @@ function chooseHardMove() {
         getPlayableColumns();
 
 
-    if (
-        !playable.length
-    ) {
+    if (!playable.length) {
 
         return -1;
 
@@ -1136,12 +1145,6 @@ function chooseHardMove() {
 
     }
 
-
-    /*
-       Tiefe 5:
-       Der Computer schaut mehrere
-       mögliche Züge voraus.
-    */
 
     const result =
         minimax(
@@ -1197,90 +1200,16 @@ function chooseComputerMove() {
 
 
 /* =========================================================
-   ERGEBNIS REGISTRIEREN
-   ========================================================= */
-
-function registerResult(
-    result,
-    score
-) {
-
-    /*
-       Zentrale Verbindung mit
-       arcade/profile.js
-    */
-
-    registerGameResult(
-        "Drop Duel",
-        result,
-        score
-    );
-
-
-    /*
-       Bestehendes Achievement-System
-       weiterhin informieren.
-
-       Falls die Funktion in deiner
-       achievements.js vorhanden ist,
-       wird sie aufgerufen.
-    */
-
-    if (
-        typeof recordDropDuelResult ===
-        "function"
-    ) {
-
-        try {
-
-            recordDropDuelResult(
-                result,
-                score
-            );
-
-        }
-
-        catch (error) {
-
-            console.warn(
-                "Drop-Duel-Achievement konnte nicht registriert werden.",
-                error
-            );
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   SPIEL BEENDET
+   GAME OVER
    ========================================================= */
 
 function finishGame(
     winner
 ) {
 
-    running =
-        false;
+    running = false;
 
-
-    thinking =
-        false;
-
-
-    if (computerTimer) {
-
-        clearTimeout(
-            computerTimer
-        );
-
-
-        computerTimer =
-            null;
-
-    }
+    thinking = false;
 
 
     let result =
@@ -1291,9 +1220,9 @@ function finishGame(
         50;
 
 
-    /* -----------------------------------------
+    /* =====================================
        SPIELER GEWINNT
-       ----------------------------------------- */
+       ===================================== */
 
     if (
         winner === HUMAN
@@ -1301,10 +1230,8 @@ function finishGame(
 
         playerWins++;
 
-
         result =
             "win";
-
 
         score =
             100;
@@ -1333,9 +1260,9 @@ function finishGame(
     }
 
 
-    /* -----------------------------------------
+    /* =====================================
        COMPUTER GEWINNT
-       ----------------------------------------- */
+       ===================================== */
 
     else if (
         winner === CPU
@@ -1343,10 +1270,8 @@ function finishGame(
 
         cpuWins++;
 
-
         result =
             "loss";
-
 
         score =
             25;
@@ -1375,15 +1300,14 @@ function finishGame(
     }
 
 
-    /* -----------------------------------------
+    /* =====================================
        UNENTSCHIEDEN
-       ----------------------------------------- */
+       ===================================== */
 
     else {
 
         result =
             "draw";
-
 
         score =
             50;
@@ -1412,19 +1336,39 @@ function finishGame(
     }
 
 
-    /* -----------------------------------------
-       PROFIL REGISTRIEREN
-       ----------------------------------------- */
+    /* =====================================
+       PROFIL AKTUALISIEREN
+       ===================================== */
 
-    registerResult(
+    registerGameResult(
+        "Drop Duel",
         result,
         score
     );
 
 
-    /* -----------------------------------------
-       APP INFORMIEREN
-       ----------------------------------------- */
+    updateScore();
+
+
+    /* =====================================
+       GAME OVER ANZEIGEN
+       ===================================== */
+
+    if (gameOver) {
+
+        gameOver.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    updateColumnButtons();
+
+
+    /* =====================================
+       APP BENACHRICHTIGEN
+       ===================================== */
 
     if (
         typeof onGameOver ===
@@ -1439,39 +1383,24 @@ function finishGame(
     }
 
 
-    /*
-       Zusätzliches Event.
-       Dadurch kann app.js reagieren,
-       ohne das Profil ein zweites Mal
-       zu registrieren.
-    */
-
     document.dispatchEvent(
         new CustomEvent(
             "dropDuelGameOver",
             {
                 detail: {
+
+                    game:
+                        "dropduel",
+
                     result,
+
                     score
+
                 }
+
             }
         )
     );
-
-
-    updateScore();
-
-
-    if (gameOver) {
-
-        gameOver.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    updateColumnButtons();
 
 }
 
@@ -1495,9 +1424,9 @@ function playColumn(
     }
 
 
-    /* -----------------------------------------
+    /* =====================================
        SPIELER
-       ----------------------------------------- */
+       ===================================== */
 
     placePiece(
         column,
@@ -1534,12 +1463,11 @@ function playColumn(
     }
 
 
-    /* -----------------------------------------
+    /* =====================================
        COMPUTER DENKT
-       ----------------------------------------- */
+       ===================================== */
 
-    thinking =
-        true;
+    thinking = true;
 
 
     setTurn(
@@ -1556,85 +1484,78 @@ function playColumn(
             : 450;
 
 
-    computerTimer =
-        setTimeout(
-            () => {
+    setTimeout(
+        () => {
 
-                computerTimer =
-                    null;
-
-
-                if (
-                    !running
-                ) {
-
-                    thinking =
-                        false;
-
-                    return;
-
-                }
-
-
-                const cpuColumn =
-                    chooseComputerMove();
-
-
-                if (
-                    cpuColumn >= 0
-                ) {
-
-                    placePiece(
-                        cpuColumn,
-                        CPU
-                    );
-
-                }
-
-
-                renderBoard();
-
-
-                if (
-                    checkWin(CPU)
-                ) {
-
-                    finishGame(
-                        CPU
-                    );
-
-                    return;
-
-                }
-
-
-                if (
-                    isBoardFull()
-                ) {
-
-                    finishGame(
-                        null
-                    );
-
-                    return;
-
-                }
-
+            if (!running) {
 
                 thinking =
                     false;
 
+                return;
 
-                setTurn(
-                    "DEIN ZUG"
+            }
+
+
+            const cpuColumn =
+                chooseComputerMove();
+
+
+            if (
+                cpuColumn >= 0
+            ) {
+
+                placePiece(
+                    cpuColumn,
+                    CPU
                 );
 
+            }
 
-                updateColumnButtons();
 
-            },
-            delay
-        );
+            renderBoard();
+
+
+            if (
+                checkWin(CPU)
+            ) {
+
+                finishGame(
+                    CPU
+                );
+
+                return;
+
+            }
+
+
+            if (
+                isBoardFull()
+            ) {
+
+                finishGame(
+                    null
+                );
+
+                return;
+
+            }
+
+
+            thinking =
+                false;
+
+
+            setTurn(
+                "DEIN ZUG"
+            );
+
+
+            updateColumnButtons();
+
+        },
+        delay
+    );
 
 }
 
@@ -1644,19 +1565,6 @@ function playColumn(
    ========================================================= */
 
 function startGame() {
-
-    if (computerTimer) {
-
-        clearTimeout(
-            computerTimer
-        );
-
-
-        computerTimer =
-            null;
-
-    }
-
 
     board =
         createBoard();
@@ -1668,6 +1576,10 @@ function startGame() {
 
     thinking =
         false;
+
+
+    gameStarted =
+        true;
 
 
     if (overlay) {
@@ -1700,7 +1612,8 @@ function startGame() {
 
 
     /*
-       Neue Runde im Profil registrieren.
+       Jede neue Runde wird
+       einmal als gespielt registriert.
     */
 
     registerGameStart(
@@ -1755,7 +1668,7 @@ function setDifficulty(
 
     /*
        Wenn gerade gespielt wird,
-       starten wir die Runde neu.
+       neue Runde starten.
     */
 
     if (running) {
@@ -1785,9 +1698,7 @@ export function initDropDuel(
     }
 
 
-    if (
-        !initialized
-    ) {
+    if (!initialized) {
 
         createColumnButtons();
 
@@ -1866,20 +1777,15 @@ export function stopDropDuel() {
     thinking =
         false;
 
-
-    if (computerTimer) {
-
-        clearTimeout(
-            computerTimer
-        );
-
-
-        computerTimer =
-            null;
-
-    }
-
-
-    updateColumnButtons();
-
 }
+
+
+/* =========================================================
+   EXPORT
+   ========================================================= */
+
+export {
+
+    startGame as restartDropDuel
+
+};
