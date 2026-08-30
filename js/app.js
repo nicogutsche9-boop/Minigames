@@ -12,6 +12,7 @@ const screens = {
   memory: "memoryScreen",
   snake: "snakeScreen",
   blockrush: "blockRushScreen",
+  dropduel: "dropDuelScreen",
   profile: "profileScreen",
   gameOver: "gameOverScreen",
   highscores: "highscoreScreen",
@@ -103,6 +104,9 @@ function goTo(name) {
   if (name !== "reaction") stopReactionGame();
   if (name !== "snake") stopSnakeGame();
   if (name !== "blockrush") stopBlockRush();
+  if (name !== "dropduel") {
+    stopDropDuel();
+}
   showScreen(screens[name]);
 }
 
@@ -141,6 +145,11 @@ document.querySelectorAll(".game-card").forEach(button => {
       goTo("blockrush");
       initBlockRush({ onGameOver: score => finishGame("blockrush", score) });
     }
+    else if (game === "dropduel") {
+    goTo("dropduel");
+    initDropDuel();
+
+}
   });
 });
 document.querySelector("#reactionMenuButton")?.addEventListener("click", () => goTo("menu"));
