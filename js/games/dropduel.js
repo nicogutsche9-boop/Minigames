@@ -1,8 +1,3 @@
-import {
-    registerGameStart,
-    registerGameResult
-} from "../arcade/profile.js";
-
 const ROWS = 6;
 const COLS = 7;
 
@@ -1094,90 +1089,77 @@ function chooseComputerMove() {
 function finishGame(winner) {
 
     running = false;
-
     thinking = false;
 
+    let score = 0;
 
-    if (
-        winner === HUMAN
-    ) {
-registerGameResult(
-    "Drop Duel",
-    "win"
-);
+    if (winner === HUMAN) {
+
         playerWins++;
 
+        // Sieg = 100 Punkte
+        score = 100;
 
         resultTitle.textContent =
             "🎉 GEWONNEN!";
 
-
         resultText.textContent =
             "Vier Steine in einer Reihe!";
 
-
-        setTurn(
-            "SIEG!"
-        );
+        setTurn("SIEG!");
 
     }
 
-    else if (
-        winner === CPU
-    ) {
-registerGameResult(
-    "Drop Duel",
-    "loss"
-);
+    else if (winner === CPU) {
+
         cpuWins++;
 
+        // Niederlage = 25 Punkte
+        score = 25;
 
         resultTitle.textContent =
             "🤖 VERLOREN";
 
-
         resultText.textContent =
             "Der Computer hat gewonnen.";
 
-
-        setTurn(
-            "NIEDERLAGE"
-        );
+        setTurn("NIEDERLAGE");
 
     }
 
     else {
-registerGameResult(
-    "Drop Duel",
-    "draw"
-);
+
+        // Unentschieden = 50 Punkte
+        score = 50;
+
         resultTitle.textContent =
             "🤝 UNENTSCHIEDEN";
-
 
         resultText.textContent =
             "Das Spielfeld ist voll.";
 
-
-        setTurn(
-            "DRAW"
-        );
+        setTurn("DRAW");
 
     }
 
-
     updateScore();
 
-
-    gameOver.classList.remove(
-        "hidden"
-    );
-
+    gameOver.classList.remove("hidden");
 
     updateColumnButtons();
 
-}
+    /*
+       Ergebnis an das zentrale
+       Mini-Arcade-Profil übergeben.
+    */
+    if (window.finishMiniArcadeGame) {
+        window.finishMiniArcadeGame(
+            "dropduel",
+            score
+        );
+    }
 
+}
 
 /* =========================================================
    SPIELER SPIELT
@@ -1330,7 +1312,6 @@ function playColumn(column) {
    ========================================================= */
 
 function startGame() { 
-    registerGameStart("Drop Duel");
     board =
     createBoard();
 
