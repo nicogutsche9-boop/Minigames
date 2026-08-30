@@ -293,13 +293,12 @@
 
         </button>
 
-        <h2>
-            🔵 DROP DUEL
-        </h2>
+        <h2>🔵 DROP DUEL</h2>
 
         <button
             id="dropDuelResetButton"
-            class="icon-button">
+            class="icon-button"
+            aria-label="Neues Spiel">
 
             ↻
 
@@ -308,16 +307,59 @@
     </div>
 
 
+    <!-- SCHWIERIGKEIT -->
+
+    <div class="dropduel-difficulty">
+
+        <div class="difficulty-title">
+            SCHWIERIGKEIT
+        </div>
+
+        <div class="difficulty-buttons">
+
+            <button
+                class="difficulty-button easy"
+                data-difficulty="easy">
+
+                <span>🟢</span>
+                <strong>EINFACH</strong>
+
+            </button>
+
+
+            <button
+                class="difficulty-button medium selected"
+                data-difficulty="medium">
+
+                <span>🟡</span>
+                <strong>MITTEL</strong>
+
+            </button>
+
+
+            <button
+                class="difficulty-button hard"
+                data-difficulty="hard">
+
+                <span>🔴</span>
+                <strong>SCHWER</strong>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SPIELER-SCORES -->
+
     <div class="dropduel-toolbar">
 
         <div class="dropduel-stat">
 
-            <span>
-                🔴 SPIELER
-            </span>
+            <span>🔴 SPIELER</span>
 
-            <strong
-                id="dropDuelPlayerWins">
+            <strong id="dropDuelPlayerWins">
                 0
             </strong>
 
@@ -335,12 +377,9 @@
 
         <div class="dropduel-stat">
 
-            <span>
-                🔵 COMPUTER
-            </span>
+            <span>🔵 COMPUTER</span>
 
-            <strong
-                id="dropDuelCpuWins">
+            <strong id="dropDuelCpuWins">
                 0
             </strong>
 
@@ -348,6 +387,8 @@
 
     </div>
 
+
+    <!-- SPIELFELD -->
 
     <div class="dropduel-board-wrap">
 
@@ -359,10 +400,13 @@
 
         <div
             id="dropDuelBoard"
-            class="dropduel-board">
-
+            class="dropduel-board"
+            role="grid"
+            aria-label="Drop Duel Spielfeld">
         </div>
 
+
+        <!-- START OVERLAY -->
 
         <div
             id="dropDuelOverlay"
@@ -391,6 +435,8 @@
 
         </div>
 
+
+        <!-- GAME OVER -->
 
         <div
             id="dropDuelGameOver"
@@ -422,13 +468,12 @@
 
     <p class="snake-help">
 
-        Tippe auf eine Spalte oder
-        direkt auf das Spielfeld.
+        Tippe auf eine Spalte oder direkt
+        auf das Spielfeld.
 
     </p>
 
-</section>
-      <section id="gameOverScreen" class="screen game-over">
+</section>      <section id="gameOverScreen" class="screen game-over">
         <div class="confetti" aria-hidden="true">✦　◆　•　★　◇　✦　•　◆　★</div>
         <div class="trophy">🏆</div>
         <h2>GAME OVER</h2>
